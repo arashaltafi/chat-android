@@ -2,6 +2,7 @@ package com.arash.altafi.chatandroid.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.arash.altafi.chatandroid.BuildConfig
 import com.arash.altafi.chatandroid.data.api.UploadService
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.data.repository.UploadRepository
@@ -29,6 +30,12 @@ object RepositoryModule {
     fun provideDictionaryRepository(
         searchService: UploadService,
     ) = UploadRepository(searchService)
+
+    @Provides
+    @Singleton
+    fun provideServerUrl(): String {
+        return BuildConfig.BASE_URL
+    }
 
     @Singleton
     @Provides

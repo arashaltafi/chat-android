@@ -21,7 +21,7 @@ android {
         versionName = "1.0"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "\"https://jsonplaceholder.typicode.com/\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.1.104:80\"")
     }
 
     buildTypes {
