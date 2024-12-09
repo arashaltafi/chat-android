@@ -1,6 +1,5 @@
-package com.arash.altafi.myapplication1.di
+package com.arash.altafi.chatandroid.di
 
-import com.arash.altafi.myapplication1.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
