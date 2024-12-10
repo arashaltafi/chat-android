@@ -36,6 +36,10 @@ class ChatViewModel @Inject constructor(
         repository.connect()
     }
 
+    fun disconnect() {
+        repository.disconnect()
+    }
+
     fun getAllMessages() = viewModelIO {
         val requestGetMessages = RequestGetMessages(
             roomId = "",

@@ -24,4 +24,9 @@ class MainActivity : ComponentActivity() {
             AppNavigation()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        chatViewModel.disconnect()
+    }
 }
