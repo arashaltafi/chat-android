@@ -1,51 +1,39 @@
 package com.arash.altafi.chatandroid.ui.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.ui.graphics.vector.ImageVector
+import com.arash.altafi.chatandroid.R
 
 data class BottomNavigationItem(
-    val label: String = "",
-    val icon: ImageVector = Icons.Filled.Home,
-    val route: String = "",
-    val badgeCount: Int = 0,
-) {
-    fun bottomNavigationItems(): List<BottomNavigationItem> {
-        return listOf(
-            BottomNavigationItem(
-                label = "home",
-                icon = Icons.Filled.Home,
-                route = Screens.Home.route,
-                badgeCount = 4
-            ),
-            BottomNavigationItem(
-                label = "search",
-                icon = Icons.Filled.Search,
-                route = Screens.Search.route,
-                badgeCount = 0
-            ),
-            BottomNavigationItem(
-                label = "profile",
-                icon = Icons.Filled.AccountCircle,
-                route = Screens.Profile.route,
-                badgeCount = 0
-            ),
-            BottomNavigationItem(
-                label = "test",
-                icon = Icons.Filled.Lock,
-                route = Screens.Test.route,
-                badgeCount = 2
-            ),
-        )
-    }
-}
+    val label: Int,
+    val icon: Int,
+    val route: String,
+    val badgeCount: Int,
+)
 
-sealed class Screens(val route: String) {
-    object Home : Screens("home")
-    object Search : Screens("search")
-    object Profile : Screens("profile")
-    object Test : Screens("test")
+fun bottomNavigationItems(): List<BottomNavigationItem> {
+    return listOf(
+        BottomNavigationItem(
+            label = R.string.dialog,
+            icon = R.drawable.round_chat_24,
+            route = "dialog",
+            badgeCount = 4
+        ),
+        BottomNavigationItem(
+            label = R.string.chat_room,
+            icon = R.drawable.round_mark_unread_chat_alt_24,
+            route = "chat_room",
+            badgeCount = 0
+        ),
+        BottomNavigationItem(
+            label = R.string.profile,
+            icon = R.drawable.round_person_24,
+            route = "profile",
+            badgeCount = 0
+        ),
+        BottomNavigationItem(
+            label = R.string.setting,
+            icon = R.drawable.round_settings_24,
+            route = "setting",
+            badgeCount = 0
+        ),
+    )
 }

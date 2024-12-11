@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Chat Android</string>
+    <string name="setting">تنظیمات</string>
+    <string name="profile">پروفایل</string>
+    <string name="chat">چت</string>
+    <string name="dialog">دیالوگ</string>
+    <string name="chat_room">چت روم</string>
+    <string name="login">ورود</string>
+    <string name="register">ثبت نام</string>
+    <string name="verify">ثبت کد تایید</string>
+    <string name="phone">شماره تلفن</string>
+    <string name="submit">تایید</string>
 </resources>

@@ -3,37 +3,32 @@ package com.arash.altafi.chatandroid.ui.navigation
 import com.arash.altafi.chatandroid.R
 
 data class NavigationDrawerItem(
-    val label: String,
+    val label: Int,
     val icon: Int,
-    val badgeCount: Int,
-    val selected: Boolean,
+    val route: String,
 )
 
-fun bottomNavigationItems(): List<NavigationDrawerItem> {
+fun navigationDrawerItems(): List<NavigationDrawerItem> {
     return listOf(
         NavigationDrawerItem(
-            label = "home",
-            icon = R.drawable.ic_launcher_foreground,
-            badgeCount = 4,
-            selected = true,
+            label = R.string.dialog,
+            icon = R.drawable.round_chat_24,
+            route = "dialog",
         ),
         NavigationDrawerItem(
-            label = "search",
-            icon = R.drawable.ic_launcher_foreground,
-            badgeCount = 0,
-            selected = false,
+            label = R.string.profile,
+            icon = R.drawable.round_person_24,
+            route = "profile",
         ),
         NavigationDrawerItem(
-            label = "account",
-            icon = R.drawable.ic_launcher_foreground,
-            badgeCount = 4,
-            selected = false,
+            label = R.string.chat_room,
+            icon = R.drawable.round_mark_unread_chat_alt_24,
+            route = "chat_room",
         ),
         NavigationDrawerItem(
-            label = "test",
-            icon = R.drawable.ic_launcher_foreground,
-            badgeCount = 1,
-            selected = false,
+            label = R.string.setting,
+            icon = R.drawable.round_settings_24,
+            route = "setting",
         ),
     )
 }

@@ -32,14 +32,6 @@ class ChatViewModel @Inject constructor(
     val liveErrorConvert: LiveData<String>
         get() = _liveErrorConvert
 
-    fun connect() {
-        repository.connect()
-    }
-
-    fun disconnect() {
-        repository.disconnect()
-    }
-
     fun getAllMessages() = viewModelIO {
         val requestGetMessages = RequestGetMessages(
             roomId = "",

@@ -1,6 +1,7 @@
 package com.arash.altafi.chatandroid.ui.navigation
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.*
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -45,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -65,13 +68,31 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.BackPressHandler
-import com.arash.altafi.chatandroid.ui.home.HomeScreen
-import com.arash.altafi.chatandroid.ui.splash.SplashScreen
+import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
+import com.arash.altafi.chatandroid.ui.screens.ChatRoomScreen
+import com.arash.altafi.chatandroid.ui.screens.ChatScreen
+import com.arash.altafi.chatandroid.ui.screens.DialogScreen
+import com.arash.altafi.chatandroid.ui.screens.LoginScreen
+import com.arash.altafi.chatandroid.ui.screens.ProfileScreen
+import com.arash.altafi.chatandroid.ui.screens.RegisterScreen
+import com.arash.altafi.chatandroid.ui.screens.SettingScreen
+import com.arash.altafi.chatandroid.ui.screens.SplashScreen
+import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val dataStoreViewModel: DataStoreViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val isConnectedSocket by mainViewModel.liveIsConnected.observeAsState(false)
+    var isConnected by remember { mutableStateOf(false) }
+
+    Log.i("test123321", "isConnectedSocket: $isConnectedSocket")
+    Log.i("test123321", "isConnected: $isConnected")
+
+    NetworkConnectivityListener(onConnectionChanged = { connected ->
+        isConnected = connected
+    })
 
     LaunchedEffect(Unit) {
         dataStoreViewModel.getTheme()
@@ -102,8 +123,10 @@ fun AppNavigation() {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
     val isSplashScreen = currentDestination == "splash"
-    val isHomeScreen = currentDestination == "home"
-    val allowBottomBar = arrayOf("home", "search", "profile", "test")
+    val isDialogScreen = currentDestination == "dialog"
+    val allowBottomBar = arrayOf("dialog", "chat_room", "profile", "setting")
+    val allowTopBar = arrayOf("chat", "dialog", "chat_room", "profile", "setting")
+    val allowNavigationBar = arrayOf("chat", "dialog", "chat_room", "profile", "setting")
 
     var isScrolled by remember { mutableStateOf(false) }
 
@@ -111,37 +134,28 @@ fun AppNavigation() {
         darkTheme = theme == "dark"
     ) {
         ModalNavigationDrawer(
-            gesturesEnabled = currentDestination != "mapbox",
+            gesturesEnabled = currentDestination in allowNavigationBar,
             drawerContent = {
                 ModalDrawerSheet(
                     drawerContainerColor = colorResource(R.color.gray_200),
                     drawerContentColor = colorResource(R.color.white),
-                    drawerShape = RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp),
+                    drawerShape = RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp),
                 ) {
                     Spacer(Modifier.height(16.dp))
-                    bottomNavigationItems().forEachIndexed { index, item ->
+                    navigationDrawerItems().forEachIndexed { index, item ->
                         NavigationDrawerItem(
                             modifier = Modifier
                                 .padding(NavigationDrawerItemDefaults.ItemPadding),
-                            label = { Text(item.label) },
+                            label = { Text(context.getString(item.label)) },
                             selected = index == selectedItemIndex,
                             icon = {
                                 Icon(
                                     painter = painterResource(id = item.icon),
-                                    contentDescription = item.label
+                                    contentDescription = context.getString(item.label)
                                 )
                             },
-                            badge = {
-                                if (item.badgeCount > 0) {
-                                    Badge {
-                                        Text(item.badgeCount.toString())
-                                    }
-                                } else {
-                                    Badge()
-                                }
-                            },
                             onClick = {
-                                navController.navigate(item.label)
+                                navController.navigate(item.route)
                                 selectedItemIndex = index
                                 coroutineScope.launch {
                                     drawerState.close()
@@ -157,14 +171,25 @@ fun AppNavigation() {
                 modifier = Modifier
                     .fillMaxSize(),
                 topBar = {
-                    if (!isSplashScreen) {
+                    if (currentDestination in allowTopBar) {
                         @OptIn(ExperimentalMaterial3Api::class)
                         TopAppBar(
                             modifier = Modifier
-                                .padding(10.dp)
-                                .clip(RoundedCornerShape(20.dp)),
+                                .clip(RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp)),
                             title = {
-                                Text("اپلیکیشن تست")
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    if (!isConnected || !isConnectedSocket) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Error,
+                                            contentDescription = "No internet connection",
+                                            tint = Color.Red
+                                        )
+                                    }
+                                    Text(
+                                        text = context.getString(R.string.app_name),
+                                        color = Color.White
+                                    )
+                                }
                             },
                             navigationIcon = {
                                 Row {
@@ -196,7 +221,7 @@ fun AppNavigation() {
                                             tint = Color.White
                                         )
                                     }
-                                    if (!isHomeScreen) {
+                                    if (!isDialogScreen) {
                                         IconButton(
                                             onClick = {
                                                 if (currentDestination !in allowBottomBar) {
@@ -254,19 +279,15 @@ fun AppNavigation() {
                         ) {
                             NavigationBar(
                                 modifier = Modifier
-                                    .padding(10.dp)
-                                    .clip(RoundedCornerShape(20.dp)),
-                                containerColor = Color.Red
+                                    .clip(RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp)),
+                                containerColor = MaterialTheme.colorScheme.primary,
                             ) {
                                 //getting the list of bottom navigation items for our data class
-                                BottomNavigationItem().bottomNavigationItems()
-                                    .forEachIndexed { index, navigationItem ->
-
-                                        //iterating all items with their respective indexes
+                                bottomNavigationItems().forEachIndexed { index, navigationItem ->
                                         NavigationBarItem(
                                             selected = index == navigationSelectedItem,
                                             label = {
-                                                Text(navigationItem.label)
+                                                Text(context.getString(navigationItem.label))
                                             },
                                             icon = {
                                                 BadgedBox(
@@ -281,8 +302,8 @@ fun AppNavigation() {
                                                     },
                                                 ) {
                                                     Icon(
-                                                        navigationItem.icon,
-                                                        contentDescription = navigationItem.label
+                                                        painter = painterResource(id = navigationItem.icon),
+                                                        contentDescription = context.getString(navigationItem.label)
                                                     )
                                                 }
                                             },
@@ -310,7 +331,7 @@ fun AppNavigation() {
                     }
                 },
                 floatingActionButton = {
-                    AnimatedVisibility(visible = fabVisible && isHomeScreen) {
+                    AnimatedVisibility(visible = fabVisible && isDialogScreen) {
                         FloatingActionButton(
                             onClick = {
                                 Toast.makeText(context, "FAB clicked", Toast.LENGTH_SHORT).show()
@@ -331,14 +352,32 @@ fun AppNavigation() {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "home",
+                    startDestination = "splash",
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    composable("home") {
-                        HomeScreen(navController)
-                    }
                     composable("splash") {
                         SplashScreen(navController)
+                    }
+                    composable("login") {
+                        LoginScreen(navController)
+                    }
+                    composable("register") {
+                        RegisterScreen(navController)
+                    }
+                    composable("dialog") {
+                        DialogScreen(navController)
+                    }
+                    composable("chat") {
+                        ChatScreen(navController)
+                    }
+                    composable("profile") {
+                        ProfileScreen(navController)
+                    }
+                    composable("setting") {
+                        SettingScreen(navController)
+                    }
+                    composable("chat_room") {
+                        ChatRoomScreen(navController)
                     }
                 }
 

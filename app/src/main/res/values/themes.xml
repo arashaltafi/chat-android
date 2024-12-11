@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.ChatAndroid" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.ChatAndroid" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="fontFamily">@font/font_family</item>
+        <item name="android:typeface">@font/font_family</item>
+        <item name="android:gravity">right</item>
+    </style>
 </resources>

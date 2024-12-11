@@ -1,5 +1,6 @@
 package com.arash.altafi.chatandroid.data.repository
 
+import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -74,6 +75,7 @@ class SocketRepository @Inject constructor(
     }
 
     private val onConnect = Emitter.Listener {
+        Log.i("test123321", "onConnect()")
         // Handle connection
         isConnected?.invoke(true)
         onError?.invoke(false)
@@ -83,11 +85,13 @@ class SocketRepository @Inject constructor(
     }
 
     private val onDisconnect = Emitter.Listener {
+        Log.i("test123321", "onDisconnect()")
         // Handle disconnection
         isConnected?.invoke(false)
     }
 
     private val onConnectError = Emitter.Listener {
+        Log.i("test123321", "onConnectError()")
         // Handle Connect Error
         if (!initialConnectionErrorOccurred) {
             onError?.invoke(true)
@@ -96,6 +100,7 @@ class SocketRepository @Inject constructor(
     }
 
     companion object {
-        private val TRANSPORTS = arrayOf(WebSocket.NAME)
+//        private val TRANSPORTS = arrayOf(WebSocket.NAME)
+        private val TRANSPORTS = arrayOf(WebSocket.NAME, "polling")
     }
 }

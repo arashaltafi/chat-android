@@ -1,4 +1,4 @@
-package com.arash.altafi.chatandroid.ui.home
+package com.arash.altafi.chatandroid.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
@@ -7,7 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,7 +18,7 @@ import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ChatViewModel
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun DialogScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val chatViewModel: ChatViewModel = hiltViewModel()
     val chats by chatViewModel.liveGetMessages.observeAsState(emptyList<ReceiveGetMessagesModel>())
@@ -41,7 +40,7 @@ fun HomeScreen(navController: NavController) {
 //        verticalArrangement = Arrangement.Center,
 //    ) {
         Text(
-            text = "Home Screen",
+            text = "Dialog Screen",
             fontWeight = FontWeight.Medium,
             fontSize = 24.sp,
             fontFamily = CustomFont,

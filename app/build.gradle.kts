@@ -21,7 +21,7 @@ android {
         versionName = "1.0"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "\"http://192.168.1.104:80\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.1.100:80\"")
     }
 
     buildTypes {
