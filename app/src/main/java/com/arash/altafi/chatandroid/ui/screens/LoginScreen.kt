@@ -1,9 +1,11 @@
 package com.arash.altafi.chatandroid.ui.screens
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.text.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
@@ -30,13 +32,23 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
+import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 
 @Composable
 fun LoginScreen(navController: NavController) {
     val authViewModel: AuthViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
     val liveLogin by authViewModel.liveLogin.observeAsState()
+
+    val isConnectedSocket by mainViewModel.liveIsConnected.observeAsState(true)
+    var isConnected by remember { mutableStateOf(true) }
+
+    NetworkConnectivityListener(onConnectionChanged = { connected ->
+        isConnected = connected
+    })
 
     val context = LocalContext.current
 
@@ -52,9 +64,9 @@ fun LoginScreen(navController: NavController) {
     }
 
     LaunchedEffect(liveLogin) {
-        Log.i("test123321", "liveLogin: $liveLogin")
-        if (liveLogin.toString() == "") {
-
+        liveLogin?.message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            navController.navigate("verify")
         }
     }
 
@@ -68,16 +80,25 @@ fun LoginScreen(navController: NavController) {
                 .padding(top = 40.dp),
             contentAlignment = Alignment.TopCenter,
         ) {
-            Text(
-                text = context.getString(R.string.app_name),
-                fontSize = 28.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Normal,
-                fontFamily = CustomFont,
-                letterSpacing = 2.sp,
-                textDecoration = TextDecoration.None
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (!isConnected || !isConnectedSocket) {
+                    Icon(
+                        imageVector = Icons.Filled.Error,
+                        contentDescription = "No internet connection",
+                        tint = Color.Red
+                    )
+                }
+                Text(
+                    text = context.getString(R.string.app_name),
+                    fontSize = 28.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal,
+                    fontFamily = CustomFont,
+                    letterSpacing = 2.sp,
+                    textDecoration = TextDecoration.None
+                )
+            }
         }
         Box(
             modifier = Modifier
@@ -149,6 +170,44 @@ fun LoginScreen(navController: NavController) {
                         )
                     )
                 }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.width(280.dp)
+                ) {
+                    Text(
+                        text = "قبلا ثبت نام نکرده اید؟",
+                        fontSize = 12.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Normal,
+                        fontStyle = FontStyle.Normal,
+                        fontFamily = CustomFont,
+                        letterSpacing = 2.sp,
+                        textDecoration = TextDecoration.None
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        onClick = {
+                            navController.navigate("register")
+                        }
+                    ) {
+                        Text(
+                            text = context.getString(R.string.register),
+                            fontSize = 14.sp,
+                            color = Color.Blue,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Normal,
+                            fontFamily = CustomFont,
+                            letterSpacing = 2.sp,
+                            textDecoration = TextDecoration.Underline,
+                        )
+                    }
+                }
+
 
                 Spacer(modifier = Modifier.height(20.dp))
 

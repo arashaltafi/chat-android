@@ -32,7 +32,7 @@ fun SplashScreen(navController: NavController) {
     val routeNavigate = token?.let {
         "dialog"
     } ?: run {
-        "dialog" //""login"
+        "login"
     }
 
     LaunchedEffect(Unit) {

@@ -77,18 +77,52 @@ import com.arash.altafi.chatandroid.ui.screens.ProfileScreen
 import com.arash.altafi.chatandroid.ui.screens.RegisterScreen
 import com.arash.altafi.chatandroid.ui.screens.SettingScreen
 import com.arash.altafi.chatandroid.ui.screens.SplashScreen
+import com.arash.altafi.chatandroid.ui.screens.VerifyScreen
 import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 
 @Composable
 fun AppNavigation() {
+    val context = LocalContext.current
+    val activity = (context as? Activity)
+
     val navController = rememberNavController()
     val dataStoreViewModel: DataStoreViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
+
+    val liveErrorConvert by mainViewModel.liveErrorConvert.observeAsState()
+    val liveError by mainViewModel.liveError.observeAsState()
+    val liveUnAuthorized by mainViewModel.liveUnAuthorized.observeAsState()
+
+    LaunchedEffect(Unit) {
+        mainViewModel.receiveError()
+        mainViewModel.receiveUnAuthorized()
+    }
+
+    LaunchedEffect(liveErrorConvert) {
+        liveErrorConvert?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(liveError) {
+        liveError?.message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+        Log.i("test123321", "liveError: $liveError")
+    }
+
+    LaunchedEffect(liveUnAuthorized) {
+        liveUnAuthorized?.message?.let {
+            dataStoreViewModel.setToken("")
+            navController.navigate("login") {
+                popUpTo("dialog") { inclusive = true }
+            }
+        }
+        Log.i("test123321", "liveUnAuthorized: $liveUnAuthorized")
+    }
+
     val isConnectedSocket by mainViewModel.liveIsConnected.observeAsState(false)
     var isConnected by remember { mutableStateOf(false) }
-
-    Log.i("test123321", "isConnectedSocket: $isConnectedSocket")
-    Log.i("test123321", "isConnected: $isConnected")
 
     NetworkConnectivityListener(onConnectionChanged = { connected ->
         isConnected = connected
@@ -109,9 +143,6 @@ fun AppNavigation() {
             dataStoreViewModel.setTheme(isDark)
         }
     }
-
-    val context = LocalContext.current
-    val activity = (context as? Activity)
 
     var doubleBackToExitPressedOnce by remember { mutableStateOf(false) }
     var navigationSelectedItem by remember { mutableIntStateOf(0) }
@@ -363,6 +394,9 @@ fun AppNavigation() {
                     }
                     composable("register") {
                         RegisterScreen(navController)
+                    }
+                    composable("verify") {
+                        VerifyScreen(navController)
                     }
                     composable("dialog") {
                         DialogScreen(navController)
