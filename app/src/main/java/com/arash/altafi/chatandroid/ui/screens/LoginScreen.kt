@@ -36,12 +36,13 @@ import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
 import com.arash.altafi.chatandroid.viewmodel.MainViewModel
+import kotlin.collections.get
 
 @Composable
 fun LoginScreen(navController: NavController) {
     val authViewModel: AuthViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
-    val liveLogin by authViewModel.liveLogin.observeAsState()
+    val liveLogin by authViewModel.liveLogin.collectAsState()
 
     val isConnectedSocket by mainViewModel.liveIsConnected.observeAsState(true)
     var isConnected by remember { mutableStateOf(true) }
@@ -66,7 +67,8 @@ fun LoginScreen(navController: NavController) {
     LaunchedEffect(liveLogin) {
         liveLogin?.message?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            navController.navigate("verify")
+            navController.navigate("verify/$mobile")
+            authViewModel.resetLoginState()
         }
     }
 
@@ -151,7 +153,7 @@ fun LoginScreen(navController: NavController) {
                         visualTransformation = VisualTransformation.None,
                         trailingIcon = {
                             Icon(
-                                painter = painterResource(R.drawable.round_person_24),
+                                painter = painterResource(R.drawable.round_phone_android_24),
                                 contentDescription = context.getString(R.string.phone),
                                 tint = Color.White
                             )
@@ -166,6 +168,7 @@ fun LoginScreen(navController: NavController) {
                             onDone = {
                                 keyboardController?.hide()
                                 focusManager.clearFocus()
+                                authViewModel.sendLogin(phone = mobile)
                             }
                         )
                     )

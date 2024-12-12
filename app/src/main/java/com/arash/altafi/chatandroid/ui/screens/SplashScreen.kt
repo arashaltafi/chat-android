@@ -1,6 +1,5 @@
 package com.arash.altafi.chatandroid.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,17 +26,11 @@ fun SplashScreen(navController: NavController) {
         dataStoreViewModel.getToken()
     }
 
-    Log.i("test123321", "token: $token")
-
-    val routeNavigate = token?.let {
-        "dialog"
-    } ?: run {
-        "login"
-    }
-
     LaunchedEffect(Unit) {
-        delay(500)
-        navController.navigate(routeNavigate) {
+        delay(2000)
+        navController.navigate(
+            if (token != null && token != "") "dialog" else "login"
+        ) {
             popUpTo("splash") { inclusive = true }
         }
     }

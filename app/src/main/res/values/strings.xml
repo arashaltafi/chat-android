@@ -9,5 +9,8 @@
     <string name="register">ثبت نام</string>
     <string name="verify">ثبت کد تایید</string>
     <string name="phone">شماره تلفن</string>
+    <string name="otp">کد تایید</string>
+    <string name="name">نام</string>
+    <string name="family">نام خانوادگی</string>
     <string name="submit">تایید</string>
 </resources>

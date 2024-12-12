@@ -1,16 +1,18 @@
 package com.arash.altafi.chatandroid.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.arash.altafi.chatandroid.data.model.req.RequestSendLogin
 import com.arash.altafi.chatandroid.data.model.req.RequestSendLogout
 import com.arash.altafi.chatandroid.data.model.req.RequestSendRegister
+import com.arash.altafi.chatandroid.data.model.req.RequestSendVerify
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessage
+import com.arash.altafi.chatandroid.data.model.res.ReceiveVerify
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
 import com.arash.altafi.chatandroid.utils.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,17 +21,21 @@ class AuthViewModel @Inject constructor(
     private var jsonUtils: JsonUtils,
 ) : BaseViewModel() {
 
-    private val _liveLogin = MutableLiveData<ReceiveMessage>()
-    val liveLogin: LiveData<ReceiveMessage>
+    private val _liveLogin = MutableStateFlow<ReceiveMessage?>(null)
+    val liveLogin: StateFlow<ReceiveMessage?>
         get() = _liveLogin
 
-    private val _liveLogout = MutableLiveData<Any>()
-    val liveLogout: LiveData<Any>
+    private val _liveLogout = MutableStateFlow<ReceiveMessage?>(null)
+    val liveLogout: StateFlow<ReceiveMessage?>
         get() = _liveLogout
 
-    private val _liveRegister = MutableLiveData<Any>()
-    val liveRegister: LiveData<Any>
+    private val _liveRegister = MutableStateFlow<ReceiveMessage?>(null)
+    val liveRegister: StateFlow<ReceiveMessage?>
         get() = _liveRegister
+
+    private val _liveVerify = MutableStateFlow<ReceiveVerify?>(null)
+    val liveVerify: StateFlow<ReceiveVerify?>
+        get() = _liveVerify
 
     fun sendLogin(phone: String) {
         val requestSendLogin = RequestSendLogin(phone = phone)
@@ -41,7 +47,7 @@ class AuthViewModel @Inject constructor(
             val receiveError =
                 jsonUtils.getSafeObject<ReceiveMessage>(eventData.toString())
             receiveError.onSuccess {
-                _liveLogin.postValue(it)
+                _liveLogin.value = it
             }
         }
     }
@@ -57,7 +63,29 @@ class AuthViewModel @Inject constructor(
             Constance.REGISTER,
             jsonUtils.toCustomJson(requestSendRegister)
         ) { eventData ->
-            _liveRegister.postValue(eventData)
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveMessage>(eventData.toString())
+            receiveError.onSuccess {
+                _liveRegister.value = it
+            }
+        }
+    }
+
+    fun sendVerify(phone: String, code: String) {
+        val requestSendVerify = RequestSendVerify(
+            phone = phone,
+            code = code,
+        )
+
+        repository.emitAndReceive(
+            Constance.VERIFY,
+            jsonUtils.toCustomJson(requestSendVerify)
+        ) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveVerify>(eventData.toString())
+            receiveError.onSuccess {
+                _liveVerify.value = it
+            }
         }
     }
 
@@ -68,7 +96,23 @@ class AuthViewModel @Inject constructor(
             Constance.LOGOUT,
             jsonUtils.toCustomJson(requestSendLogout)
         ) { eventData ->
-            _liveLogout.postValue(eventData)
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveMessage>(eventData.toString())
+            receiveError.onSuccess {
+                _liveLogout.value = it
+            }
         }
+    }
+
+    fun resetLoginState() {
+        _liveLogin.value = null
+    }
+
+    fun resetLogoutState() {
+        _liveLogout.value = null
+    }
+
+    fun resetRegisterState() {
+        _liveRegister.value = null
     }
 }

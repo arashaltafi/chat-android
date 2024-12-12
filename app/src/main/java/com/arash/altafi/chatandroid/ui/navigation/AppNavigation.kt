@@ -395,8 +395,9 @@ fun AppNavigation() {
                     composable("register") {
                         RegisterScreen(navController)
                     }
-                    composable("verify") {
-                        VerifyScreen(navController)
+                    composable("verify/{mobile}") { backStackEntry ->
+                        val mobile = backStackEntry.arguments?.getString("mobile") ?: "0"
+                        VerifyScreen(navController, mobile)
                     }
                     composable("dialog") {
                         DialogScreen(navController)
