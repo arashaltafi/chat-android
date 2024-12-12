@@ -5,12 +5,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -78,6 +81,7 @@ import com.arash.altafi.chatandroid.ui.screens.RegisterScreen
 import com.arash.altafi.chatandroid.ui.screens.SettingScreen
 import com.arash.altafi.chatandroid.ui.screens.SplashScreen
 import com.arash.altafi.chatandroid.ui.screens.VerifyScreen
+import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 
 @Composable
@@ -168,23 +172,37 @@ fun AppNavigation() {
             gesturesEnabled = currentDestination in allowNavigationBar,
             drawerContent = {
                 ModalDrawerSheet(
-                    drawerContainerColor = colorResource(R.color.gray_200),
-                    drawerContentColor = colorResource(R.color.white),
+                    drawerContainerColor = MaterialTheme.colorScheme.primary,
+                    drawerContentColor = MaterialTheme.colorScheme.primary,
                     drawerShape = RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp),
                 ) {
                     Spacer(Modifier.height(16.dp))
                     navigationDrawerItems().forEachIndexed { index, item ->
+                        val isSelected = index == selectedItemIndex
+                        val contentColor = if (isSelected) Color.Magenta else Color.White
+
                         NavigationDrawerItem(
                             modifier = Modifier
                                 .padding(NavigationDrawerItemDefaults.ItemPadding),
-                            label = { Text(context.getString(item.label)) },
-                            selected = index == selectedItemIndex,
+                            label = {
+                                Text(
+                                    text = context.getString(item.label),
+                                    color = contentColor,
+                                    fontFamily = CustomFont
+                                )
+                            },
+                            selected = isSelected,
                             icon = {
                                 Icon(
                                     painter = painterResource(id = item.icon),
-                                    contentDescription = context.getString(item.label)
+                                    contentDescription = context.getString(item.label),
+                                    tint = contentColor
                                 )
                             },
+                            colors = NavigationDrawerItemDefaults.colors(
+                                selectedContainerColor = Color.Transparent,
+                                unselectedContainerColor = Color.Transparent
+                            ),
                             onClick = {
                                 navController.navigate(item.route)
                                 selectedItemIndex = index
@@ -218,7 +236,8 @@ fun AppNavigation() {
                                     }
                                     Text(
                                         text = context.getString(R.string.app_name),
-                                        color = Color.White
+                                        color = Color.White,
+                                        fontFamily = CustomFont
                                     )
                                 }
                             },
@@ -318,23 +337,35 @@ fun AppNavigation() {
                                         NavigationBarItem(
                                             selected = index == navigationSelectedItem,
                                             label = {
-                                                Text(context.getString(navigationItem.label))
+                                                Text(
+                                                    text = context.getString(navigationItem.label),
+                                                    fontFamily = CustomFont
+                                                )
                                             },
                                             icon = {
                                                 BadgedBox(
                                                     badge = {
                                                         if (navigationItem.badgeCount != 0) {
-                                                            Badge {
-                                                                Text(text = navigationItem.badgeCount.toString())
+                                                            Badge(
+                                                                containerColor = Color.White,
+                                                                modifier = Modifier.border(
+                                                                    1.dp,
+                                                                    Color.Magenta,
+                                                                    CircleShape
+                                                                )
+                                                            ) {
+                                                                Text(
+                                                                    text = navigationItem.badgeCount.toString(),
+                                                                    fontFamily = CustomFont,
+                                                                    color = Color.Black
+                                                                )
                                                             }
-                                                        } else {
-                                                            Badge()
                                                         }
                                                     },
                                                 ) {
                                                     Icon(
                                                         painter = painterResource(id = navigationItem.icon),
-                                                        contentDescription = context.getString(navigationItem.label)
+                                                        contentDescription = context.getString(navigationItem.label),
                                                     )
                                                 }
                                             },
@@ -350,10 +381,10 @@ fun AppNavigation() {
                                             },
                                             colors = NavigationBarItemDefaults.colors(
                                                 selectedIconColor = Color.Magenta,
-                                                selectedTextColor = Color.Blue,
-                                                unselectedIconColor = Color.Green,
-                                                unselectedTextColor = Color.Yellow,
-                                                indicatorColor = Color.Cyan
+                                                selectedTextColor = Color.Magenta,
+                                                unselectedIconColor = Color.White,
+                                                unselectedTextColor = Color.White,
+                                                indicatorColor = Color.Transparent
                                             )
                                         )
                                     }
@@ -383,7 +414,7 @@ fun AppNavigation() {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "splash",
+                    startDestination = "dialog",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("splash") {
