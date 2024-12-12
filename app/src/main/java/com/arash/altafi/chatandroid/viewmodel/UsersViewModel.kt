@@ -1,6 +1,8 @@
 package com.arash.altafi.chatandroid.viewmodel
 
-import com.arash.altafi.chatandroid.data.model.res.ReceiveMessage
+import android.util.Log
+import com.arash.altafi.chatandroid.data.model.res.ReceiveUsers
+import com.arash.altafi.chatandroid.data.model.res.ReceiveUsersResponse
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
@@ -16,17 +18,18 @@ class UsersViewModel @Inject constructor(
     private var jsonUtils: JsonUtils,
 ) : BaseViewModel() {
 
-    private val _liveGetUsers = MutableStateFlow<List<ReceiveMessage>?>(null)
-    val liveGetUsers: StateFlow<List<ReceiveMessage>?>
+    private val _liveGetUsers = MutableStateFlow<ReceiveUsersResponse?>(null)
+    val liveGetUsers: StateFlow<ReceiveUsersResponse?>
         get() = _liveGetUsers
 
     fun getUsers() {
         repository.emitAndReceive(
             Constance.USERS,
         ) { eventData ->
-            val receiveError =
-                jsonUtils.getSafeObject<List<ReceiveMessage>>(eventData.toString())
-            receiveError.onSuccess {
+            Log.i("test123321", "eventData: $eventData")
+            val receiveUsers =
+                jsonUtils.getSafeObject<ReceiveUsersResponse>(eventData.toString())
+            receiveUsers.onSuccess {
                 _liveGetUsers.value = it
             }
         }

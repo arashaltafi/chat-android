@@ -13,28 +13,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
-import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
 import com.arash.altafi.chatandroid.viewmodel.UsersViewModel
 import com.arash.altafi.chatandroid.R
 
 @Composable
 fun UsersScreen(navController: NavController) {
     val usersViewModel: UsersViewModel = hiltViewModel()
-    val dataStoreViewModel: DataStoreViewModel = hiltViewModel()
     val liveGetUsers by usersViewModel.liveGetUsers.collectAsState()
 
     LaunchedEffect(Unit) {
         usersViewModel.getUsers()
     }
 
-    liveGetUsers?.let {
+    liveGetUsers?.users?.let {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
         ) {
             items(it.size) { user ->
                 Text(
-                    text = it[user].message
+                    text = it[user].name
                 )
             }
         }
