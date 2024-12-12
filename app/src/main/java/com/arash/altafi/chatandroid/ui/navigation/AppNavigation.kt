@@ -80,6 +80,7 @@ import com.arash.altafi.chatandroid.ui.screens.ProfileScreen
 import com.arash.altafi.chatandroid.ui.screens.RegisterScreen
 import com.arash.altafi.chatandroid.ui.screens.SettingScreen
 import com.arash.altafi.chatandroid.ui.screens.SplashScreen
+import com.arash.altafi.chatandroid.ui.screens.UsersScreen
 import com.arash.altafi.chatandroid.ui.screens.VerifyScreen
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.MainViewModel
@@ -396,7 +397,7 @@ fun AppNavigation() {
                     AnimatedVisibility(visible = fabVisible && isDialogScreen) {
                         FloatingActionButton(
                             onClick = {
-                                Toast.makeText(context, "FAB clicked", Toast.LENGTH_SHORT).show()
+                                navController.navigate("users")
                             },
                             containerColor = MaterialTheme.colorScheme.secondary,
                             shape = RoundedCornerShape(
@@ -414,7 +415,7 @@ fun AppNavigation() {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "dialog",
+                    startDestination = "splash",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("splash") {
@@ -441,6 +442,9 @@ fun AppNavigation() {
                     }
                     composable("setting") {
                         SettingScreen(navController)
+                    }
+                    composable("users") {
+                        UsersScreen(navController)
                     }
                     composable("chat_room") {
                         ChatRoomScreen(navController)
