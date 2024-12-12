@@ -3,7 +3,7 @@ package com.arash.altafi.chatandroid.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arash.altafi.chatandroid.utils.base.BaseViewModel
-import com.arash.altafi.myapplication1.data.repository.DataStoreRepository
+import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

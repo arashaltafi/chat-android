@@ -1,15 +1,21 @@
 package com.arash.altafi.chatandroid.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.arash.altafi.chatandroid.data.model.req.RequestIntroduce
 import com.arash.altafi.chatandroid.data.model.req.RequestSendLogin
 import com.arash.altafi.chatandroid.data.model.req.RequestSendLogout
 import com.arash.altafi.chatandroid.data.model.req.RequestSendRegister
 import com.arash.altafi.chatandroid.data.model.req.RequestSendVerify
+import com.arash.altafi.chatandroid.data.model.res.ReceiveIntroduce
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessage
 import com.arash.altafi.chatandroid.data.model.res.ReceiveVerify
+import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
 import com.arash.altafi.chatandroid.utils.base.BaseViewModel
+import com.arash.altafi.chatandroid.utils.ext.viewModelIO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: SocketRepository,
+    private val dataStoreRepository: DataStoreRepository,
     private var jsonUtils: JsonUtils,
 ) : BaseViewModel() {
 
@@ -36,6 +43,20 @@ class AuthViewModel @Inject constructor(
     private val _liveVerify = MutableStateFlow<ReceiveVerify?>(null)
     val liveVerify: StateFlow<ReceiveVerify?>
         get() = _liveVerify
+
+    private val _liveIntroduce = MutableStateFlow<ReceiveIntroduce?>(null)
+    val liveIntroduce: StateFlow<ReceiveIntroduce?>
+        get() = _liveIntroduce
+
+    private var introduceSentSuccessfully = false
+
+    init {
+        repository.isConnected = { isConnected ->
+            if (isConnected && !introduceSentSuccessfully) {
+                sendIntroduce()
+            }
+        }
+    }
 
     fun sendLogin(phone: String) {
         val requestSendLogin = RequestSendLogin(phone = phone)
@@ -104,6 +125,26 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun sendIntroduce() {
+        if (introduceSentSuccessfully) return
+
+        val requestIntroduce = RequestIntroduce(
+            token = dataStoreRepository.getTokenString()
+        )
+
+        repository.emitAndReceive(
+            Constance.INTRODUCE,
+            jsonUtils.toCustomJson(requestIntroduce)
+        ) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveIntroduce>(eventData.toString())
+            receiveError.onSuccess {
+                _liveIntroduce.value = it
+                introduceSentSuccessfully = true
+            }
+        }
+    }
+
     fun resetLoginState() {
         _liveLogin.value = null
     }
@@ -114,5 +155,9 @@ class AuthViewModel @Inject constructor(
 
     fun resetRegisterState() {
         _liveRegister.value = null
+    }
+
+    fun resetIntroduceState() {
+        _liveIntroduce.value = null
     }
 }

@@ -5,14 +5,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -55,8 +56,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -126,7 +127,6 @@ fun AppNavigation() {
         Log.i("test123321", "liveUnAuthorized: $liveUnAuthorized")
     }
 
-    val isConnectedSocket by mainViewModel.liveIsConnected.observeAsState(false)
     var isConnected by remember { mutableStateOf(false) }
 
     NetworkConnectivityListener(onConnectionChanged = { connected ->
@@ -161,8 +161,8 @@ fun AppNavigation() {
     val isSplashScreen = currentDestination == "splash"
     val isDialogScreen = currentDestination == "dialog"
     val allowBottomBar = arrayOf("dialog", "chat_room", "profile", "setting")
-    val allowTopBar = arrayOf("chat", "dialog", "chat_room", "profile", "setting")
-    val allowNavigationBar = arrayOf("chat", "dialog", "chat_room", "profile", "setting")
+    val allowTopBar = arrayOf("users", "chat", "dialog", "chat_room", "profile", "setting")
+    val allowNavigationBar = arrayOf("users", "chat", "dialog", "chat_room", "profile", "setting")
 
     var isScrolled by remember { mutableStateOf(false) }
 
@@ -173,6 +173,9 @@ fun AppNavigation() {
             gesturesEnabled = currentDestination in allowNavigationBar,
             drawerContent = {
                 ModalDrawerSheet(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(LocalConfiguration.current.screenWidthDp.dp * 0.7f),
                     drawerContainerColor = MaterialTheme.colorScheme.primary,
                     drawerContentColor = MaterialTheme.colorScheme.primary,
                     drawerShape = RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp),
@@ -228,7 +231,7 @@ fun AppNavigation() {
                                 .clip(RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp)),
                             title = {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    if (!isConnected || !isConnectedSocket) {
+                                    if (!isConnected) {
                                         Icon(
                                             imageVector = Icons.Filled.Error,
                                             contentDescription = "No internet connection",

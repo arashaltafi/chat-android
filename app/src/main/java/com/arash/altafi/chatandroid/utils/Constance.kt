@@ -10,4 +10,5 @@ object Constance {
     const val LOGIN = "login"
     const val REGISTER = "register"
     const val VERIFY = "verify"
+    const val USERS = "getUsers"
 }

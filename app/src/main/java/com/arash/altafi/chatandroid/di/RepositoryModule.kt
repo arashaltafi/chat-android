@@ -7,7 +7,7 @@ import com.arash.altafi.chatandroid.data.api.UploadService
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.data.repository.UploadRepository
 import com.arash.altafi.chatandroid.utils.EncryptionUtils
-import com.arash.altafi.myapplication1.data.repository.DataStoreRepository
+import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

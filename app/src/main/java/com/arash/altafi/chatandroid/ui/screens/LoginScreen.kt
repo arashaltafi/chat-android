@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -35,16 +34,12 @@ import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
-import com.arash.altafi.chatandroid.viewmodel.MainViewModel
-import kotlin.collections.get
 
 @Composable
 fun LoginScreen(navController: NavController) {
     val authViewModel: AuthViewModel = hiltViewModel()
-    val mainViewModel: MainViewModel = hiltViewModel()
     val liveLogin by authViewModel.liveLogin.collectAsState()
 
-    val isConnectedSocket by mainViewModel.liveIsConnected.observeAsState(true)
     var isConnected by remember { mutableStateOf(true) }
 
     NetworkConnectivityListener(onConnectionChanged = { connected ->
@@ -83,7 +78,7 @@ fun LoginScreen(navController: NavController) {
             contentAlignment = Alignment.TopCenter,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (!isConnected || !isConnectedSocket) {
+                if (!isConnected) {
                     Icon(
                         imageVector = Icons.Filled.Error,
                         contentDescription = "No internet connection",

@@ -3,7 +3,6 @@ package com.arash.altafi.chatandroid.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arash.altafi.chatandroid.data.model.req.RequestGetMessages
-import com.arash.altafi.chatandroid.data.model.req.RequestIntroduce
 import com.arash.altafi.chatandroid.data.model.req.RequestSendMessage
 import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessagesModel
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
@@ -23,10 +22,6 @@ class ChatViewModel @Inject constructor(
     private val _liveGetMessages = MutableLiveData<List<ReceiveGetMessagesModel>>()
     val liveGetMessages: LiveData<List<ReceiveGetMessagesModel>>
         get() = _liveGetMessages
-
-    private val _liveGetIntroduce = MutableLiveData<Any>()
-    val liveGetIntroduce: LiveData<Any>
-        get() = _liveGetIntroduce
 
     private val _liveErrorConvert = MutableLiveData<String>()
     val liveErrorConvert: LiveData<String>
@@ -69,18 +64,6 @@ class ChatViewModel @Inject constructor(
             )
         }
         repository.send(Constance.SEND_MESSAGE, jsonUtils.toCustomJson(requestSendMessage))
-    }
-
-    fun sendAndReceiveIntroduce(name: String) = viewModelIO {
-        val request = RequestIntroduce(
-            name = name
-        )
-        repository.emitAndReceive(
-            Constance.INTRODUCE,
-            jsonUtils.toCustomJson(request)
-        ) { eventData ->
-            _liveGetIntroduce.postValue(eventData)
-        }
     }
 
 }

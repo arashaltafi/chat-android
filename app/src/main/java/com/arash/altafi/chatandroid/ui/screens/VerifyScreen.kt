@@ -11,10 +11,8 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -38,7 +36,6 @@ import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
 import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
-import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 
 @Composable
 fun VerifyScreen(navController: NavController, mobile: String) {
@@ -54,12 +51,10 @@ fun VerifyScreen(navController: NavController, mobile: String) {
     }
 
     val authViewModel: AuthViewModel = hiltViewModel()
-    val mainViewModel: MainViewModel = hiltViewModel()
     val dataStoreViewModel: DataStoreViewModel = hiltViewModel()
 
     val liveVerify by authViewModel.liveVerify.collectAsState()
 
-    val isConnectedSocket by mainViewModel.liveIsConnected.observeAsState(true)
     var isConnected by remember { mutableStateOf(true) }
 
     NetworkConnectivityListener(onConnectionChanged = { connected ->
@@ -88,7 +83,6 @@ fun VerifyScreen(navController: NavController, mobile: String) {
             navController.navigate("dialog") {
                 popUpTo("verify") { inclusive = true }
             }
-            authViewModel.resetRegisterState()
         }
     }
 
@@ -103,7 +97,7 @@ fun VerifyScreen(navController: NavController, mobile: String) {
             contentAlignment = Alignment.TopCenter,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (!isConnected || !isConnectedSocket) {
+                if (!isConnected) {
                     Icon(
                         imageVector = Icons.Filled.Error,
                         contentDescription = "No internet connection",

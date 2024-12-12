@@ -1,19 +1,30 @@
-package com.arash.altafi.myapplication1.data.repository
+package com.arash.altafi.chatandroid.data.repository
 
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.arash.altafi.chatandroid.utils.EncryptionUtils
 import com.arash.altafi.chatandroid.utils.base.BaseRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class DataStoreRepository @Inject constructor(
-    private val dataStore: androidx.datastore.core.DataStore<Preferences>,
+    private val dataStore: DataStore<Preferences>,
     private val encryptionUtils: EncryptionUtils
 ) : BaseRepository() {
     // Token
+    fun getTokenString(): String {
+        return runBlocking {
+            dataStore.data.map { preferences ->
+                encryptionUtils.decrypt(preferences[PreferenceKeys.TOKEN] ?: "default_value")
+            }.first()
+        }
+    }
+
     fun getToken(): Flow<String> {
         return dataStore.data.map { preferences ->
             encryptionUtils.decrypt(preferences[PreferenceKeys.TOKEN] ?: "default_value")
