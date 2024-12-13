@@ -6,6 +6,7 @@
     <string name="dialog">دیالوگ</string>
     <string name="chat_room">چت روم</string>
     <string name="login">ورود</string>
+    <string name="logout">خروج</string>
     <string name="register">ثبت نام</string>
     <string name="verify">ثبت کد تایید</string>
     <string name="phone">شماره تلفن</string>

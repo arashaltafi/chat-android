@@ -5,14 +5,19 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +27,8 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -56,17 +63,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.ChatAndroidTheme
 import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
 import kotlinx.coroutines.delay
@@ -85,6 +97,7 @@ import com.arash.altafi.chatandroid.ui.screens.SplashScreen
 import com.arash.altafi.chatandroid.ui.screens.UsersScreen
 import com.arash.altafi.chatandroid.ui.screens.VerifyScreen
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
+import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
 import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 
 @Composable
@@ -92,21 +105,33 @@ fun AppNavigation() {
     val context = LocalContext.current
     val activity = (context as? Activity)
 
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
     val navController = rememberNavController()
     val dataStoreViewModel: DataStoreViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
+    val authViewModel: AuthViewModel = hiltViewModel()
 
     val liveErrorConvert by mainViewModel.liveErrorConvert.collectAsState()
     val liveError by mainViewModel.liveError.collectAsState()
     val liveUnAuthorized by mainViewModel.liveUnAuthorized.collectAsState()
+    val liveLogout by authViewModel.liveLogout.collectAsState()
 
     val userInfo by dataStoreViewModel.cachedUserInfo.observeAsState()
-
-    Log.i("test123321", "userInfo: $userInfo")
 
     LaunchedEffect(Unit) {
         mainViewModel.receiveError()
         mainViewModel.receiveUnAuthorized()
+    }
+
+    LaunchedEffect(liveLogout) {
+        liveLogout?.message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            dataStoreViewModel.clearAll()
+            drawerState.close()
+            navController.navigate("login")
+            authViewModel.resetLogoutState()
+        }
     }
 
     LaunchedEffect(liveErrorConvert) {
@@ -157,7 +182,6 @@ fun AppNavigation() {
 
     var doubleBackToExitPressedOnce by remember { mutableStateOf(false) }
     var navigationSelectedItem by remember { mutableIntStateOf(0) }
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -186,41 +210,110 @@ fun AppNavigation() {
                     drawerContentColor = MaterialTheme.colorScheme.primary,
                     drawerShape = RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp),
                 ) {
-                    Spacer(Modifier.height(16.dp))
-                    navigationDrawerItems().forEachIndexed { index, item ->
-                        val isSelected = index == selectedItemIndex
-                        val contentColor = if (isSelected) Color.Magenta else Color.White
-
-                        NavigationDrawerItem(
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 32.dp),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Row(
                             modifier = Modifier
-                                .padding(NavigationDrawerItemDefaults.ItemPadding),
-                            label = {
-                                Text(
-                                    text = context.getString(item.label),
-                                    color = contentColor,
-                                    fontFamily = CustomFont
+                                .fillMaxWidth()
+                                .padding(16.dp, 0.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            AsyncImage(
+                                model = userInfo?.avatar,
+                                contentDescription = userInfo?.name,
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                                    .shadow(8.dp)
+                                    .border(
+                                        1.dp,
+                                        Color.Green,
+                                        CircleShape
+                                    ),
+                                contentScale = ContentScale.Crop,
+                            )
+                            Spacer(Modifier.width(22.dp))
+                            Text(
+                                text = userInfo?.name + " " + userInfo?.family,
+                                fontSize = 16.sp,
+                                fontStyle = FontStyle.Normal,
+                                fontFamily = CustomFont,
+                                color = Color.White
+                            )
+                        }
+
+                        Spacer(Modifier.height(20.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        ) {
+                            navigationDrawerItems().forEachIndexed { index, item ->
+                                val isSelected = index == selectedItemIndex
+                                val contentColor = if (isSelected) Color.Magenta else Color.White
+
+                                NavigationDrawerItem(
+                                    modifier = Modifier
+                                        .padding(NavigationDrawerItemDefaults.ItemPadding),
+                                    label = {
+                                        Text(
+                                            text = context.getString(item.label),
+                                            color = contentColor,
+                                            fontFamily = CustomFont
+                                        )
+                                    },
+                                    selected = isSelected,
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = item.icon),
+                                            contentDescription = context.getString(item.label),
+                                            tint = contentColor
+                                        )
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        selectedContainerColor = Color.Transparent,
+                                        unselectedContainerColor = Color.Transparent
+                                    ),
+                                    onClick = {
+                                        navController.navigate(item.route)
+                                        selectedItemIndex = index
+                                        coroutineScope.launch {
+                                            drawerState.close()
+                                        }
+                                    }
                                 )
-                            },
-                            selected = isSelected,
-                            icon = {
-                                Icon(
-                                    painter = painterResource(id = item.icon),
-                                    contentDescription = context.getString(item.label),
-                                    tint = contentColor
-                                )
-                            },
-                            colors = NavigationDrawerItemDefaults.colors(
-                                selectedContainerColor = Color.Transparent,
-                                unselectedContainerColor = Color.Transparent
-                            ),
-                            onClick = {
-                                navController.navigate(item.route)
-                                selectedItemIndex = index
-                                coroutineScope.launch {
-                                    drawerState.close()
-                                }
                             }
-                        )
+                        }
+
+                        Spacer(Modifier.height(20.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp, 0.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Button(
+                                onClick = {
+                                    authViewModel.sendLogout()
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                            ) {
+                                Text(
+                                    text = context.getString(R.string.logout),
+                                    color = Color.White,
+                                    fontFamily = CustomFont,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
                     }
                 }
             },
@@ -344,60 +437,62 @@ fun AppNavigation() {
                             ) {
                                 //getting the list of bottom navigation items for our data class
                                 bottomNavigationItems().forEachIndexed { index, navigationItem ->
-                                        NavigationBarItem(
-                                            selected = index == navigationSelectedItem,
-                                            label = {
-                                                Text(
-                                                    text = context.getString(navigationItem.label),
-                                                    fontFamily = CustomFont
-                                                )
-                                            },
-                                            icon = {
-                                                BadgedBox(
-                                                    badge = {
-                                                        if (navigationItem.badgeCount != 0) {
-                                                            Badge(
-                                                                containerColor = Color.White,
-                                                                modifier = Modifier.border(
-                                                                    1.dp,
-                                                                    Color.Magenta,
-                                                                    CircleShape
-                                                                )
-                                                            ) {
-                                                                Text(
-                                                                    text = navigationItem.badgeCount.toString(),
-                                                                    fontFamily = CustomFont,
-                                                                    color = Color.Black
-                                                                )
-                                                            }
-                                                        }
-                                                    },
-                                                ) {
-                                                    Icon(
-                                                        painter = painterResource(id = navigationItem.icon),
-                                                        contentDescription = context.getString(navigationItem.label),
-                                                    )
-                                                }
-                                            },
-                                            onClick = {
-                                                navigationSelectedItem = index
-                                                navController.navigate(navigationItem.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
-                                            },
-                                            colors = NavigationBarItemDefaults.colors(
-                                                selectedIconColor = Color.Magenta,
-                                                selectedTextColor = Color.Magenta,
-                                                unselectedIconColor = Color.White,
-                                                unselectedTextColor = Color.White,
-                                                indicatorColor = Color.Transparent
+                                    NavigationBarItem(
+                                        selected = index == navigationSelectedItem,
+                                        label = {
+                                            Text(
+                                                text = context.getString(navigationItem.label),
+                                                fontFamily = CustomFont
                                             )
+                                        },
+                                        icon = {
+                                            BadgedBox(
+                                                badge = {
+                                                    if (navigationItem.badgeCount != 0) {
+                                                        Badge(
+                                                            containerColor = Color.White,
+                                                            modifier = Modifier.border(
+                                                                1.dp,
+                                                                Color.Magenta,
+                                                                CircleShape
+                                                            )
+                                                        ) {
+                                                            Text(
+                                                                text = navigationItem.badgeCount.toString(),
+                                                                fontFamily = CustomFont,
+                                                                color = Color.Black
+                                                            )
+                                                        }
+                                                    }
+                                                },
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = navigationItem.icon),
+                                                    contentDescription = context.getString(
+                                                        navigationItem.label
+                                                    ),
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            navigationSelectedItem = index
+                                            navController.navigate(navigationItem.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        },
+                                        colors = NavigationBarItemDefaults.colors(
+                                            selectedIconColor = Color.Magenta,
+                                            selectedTextColor = Color.Magenta,
+                                            unselectedIconColor = Color.White,
+                                            unselectedTextColor = Color.White,
+                                            indicatorColor = Color.Transparent
                                         )
-                                    }
+                                    )
+                                }
                             }
                         }
                     }

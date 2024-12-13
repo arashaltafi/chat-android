@@ -110,8 +110,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun sendLogout(token: String) {
-        val requestSendLogout = RequestSendLogout(token = token)
+    fun sendLogout() {
+        val requestSendLogout = RequestSendLogout(
+            token = dataStoreRepository.getTokenString()
+        )
 
         repository.emitAndReceive(
             Constance.LOGOUT,

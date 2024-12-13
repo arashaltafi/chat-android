@@ -38,6 +38,11 @@ class DataStoreViewModel @Inject constructor(
         getTheme()
     }
 
+    fun clearAll() {
+        repository.setUserInfo(UserInfoModel())
+        repository.setToken("")
+    }
+
     // Token
     fun getToken() = callCache(
         cacheCall = repository.getToken(),
