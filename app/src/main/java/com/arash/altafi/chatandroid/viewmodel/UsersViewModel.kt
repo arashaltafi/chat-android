@@ -1,7 +1,5 @@
 package com.arash.altafi.chatandroid.viewmodel
 
-import android.util.Log
-import com.arash.altafi.chatandroid.data.model.res.ReceiveUsers
 import com.arash.altafi.chatandroid.data.model.res.ReceiveUsersResponse
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
@@ -26,7 +24,6 @@ class UsersViewModel @Inject constructor(
         repository.emitAndReceive(
             Constance.USERS,
         ) { eventData ->
-            Log.i("test123321", "eventData: $eventData")
             val receiveUsers =
                 jsonUtils.getSafeObject<ReceiveUsersResponse>(eventData.toString())
             receiveUsers.onSuccess {

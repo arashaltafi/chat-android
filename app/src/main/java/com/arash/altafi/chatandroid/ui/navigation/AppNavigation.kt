@@ -43,6 +43,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -95,9 +96,13 @@ fun AppNavigation() {
     val dataStoreViewModel: DataStoreViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
 
-    val liveErrorConvert by mainViewModel.liveErrorConvert.observeAsState()
-    val liveError by mainViewModel.liveError.observeAsState()
-    val liveUnAuthorized by mainViewModel.liveUnAuthorized.observeAsState()
+    val liveErrorConvert by mainViewModel.liveErrorConvert.collectAsState()
+    val liveError by mainViewModel.liveError.collectAsState()
+    val liveUnAuthorized by mainViewModel.liveUnAuthorized.collectAsState()
+
+    val userInfo by dataStoreViewModel.cachedUserInfo.observeAsState()
+
+    Log.i("test123321", "userInfo: $userInfo")
 
     LaunchedEffect(Unit) {
         mainViewModel.receiveError()
@@ -114,17 +119,18 @@ fun AppNavigation() {
         liveError?.message?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
-        Log.i("test123321", "liveError: $liveError")
+        mainViewModel.resetErrorState()
     }
 
     LaunchedEffect(liveUnAuthorized) {
         liveUnAuthorized?.message?.let {
             dataStoreViewModel.setToken("")
+            dataStoreViewModel.clearUserInfo()
             navController.navigate("login") {
                 popUpTo("dialog") { inclusive = true }
             }
         }
-        Log.i("test123321", "liveUnAuthorized: $liveUnAuthorized")
+        mainViewModel.resetUnAuthorizedState()
     }
 
     var isConnected by remember { mutableStateOf(false) }

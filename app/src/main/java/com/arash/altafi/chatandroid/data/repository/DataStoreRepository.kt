@@ -4,7 +4,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.arash.altafi.chatandroid.data.model.UserInfoModel
 import com.arash.altafi.chatandroid.utils.EncryptionUtils
+import com.arash.altafi.chatandroid.utils.JsonUtils
 import com.arash.altafi.chatandroid.utils.base.BaseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -14,8 +16,13 @@ import javax.inject.Inject
 
 class DataStoreRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val encryptionUtils: EncryptionUtils
+    private val encryptionUtils: EncryptionUtils,
+    private val jsonUtils: JsonUtils
 ) : BaseRepository() {
+
+    @Inject
+    lateinit var jsonUtils1: JsonUtils
+
     // Token
     fun getTokenString(): String {
         return runBlocking {
@@ -30,21 +37,28 @@ class DataStoreRepository @Inject constructor(
             encryptionUtils.decrypt(preferences[PreferenceKeys.TOKEN] ?: "default_value")
         }
     }
+
     fun setToken(value: String) = callCache {
         dataStore.edit { preferences ->
             preferences[PreferenceKeys.TOKEN] = encryptionUtils.encrypt(value)
         }
     }
 
-    // Name
-    fun getName(): Flow<String> {
+    // UserInfo
+    fun getUserInfo(): Flow<UserInfoModel> {
         return dataStore.data.map { preferences ->
-            encryptionUtils.decrypt(preferences[PreferenceKeys.NAME] ?: "default_value")
+            val json =
+                encryptionUtils.decrypt(preferences[PreferenceKeys.USERINFO] ?: "default_value")
+            // Use JsonUtils to safely convert JSON to UserInfoModel
+            jsonUtils.getSafeObject<UserInfoModel>(json).getOrElse {
+                UserInfoModel()
+            }
         }
     }
-    fun setName(value: String) = callCache {
+
+    fun setUserInfo(value: UserInfoModel) = callCache {
         dataStore.edit { preferences ->
-            preferences[PreferenceKeys.NAME] = encryptionUtils.encrypt(value)
+            preferences[PreferenceKeys.USERINFO] = encryptionUtils.encrypt(jsonUtils.toJson(value))
         }
     }
 
@@ -54,11 +68,13 @@ class DataStoreRepository @Inject constructor(
             preferences[PreferenceKeys.THEME] ?: ""
         }
     }
+
     fun setTheme(theme: String) = callCache {
         dataStore.edit { preferences ->
             preferences[PreferenceKeys.THEME] = theme
         }
     }
+
     fun changeTheme() = callCache {
         dataStore.edit { preferences ->
             preferences[PreferenceKeys.THEME] =
@@ -70,5 +86,5 @@ class DataStoreRepository @Inject constructor(
 object PreferenceKeys {
     val TOKEN = stringPreferencesKey("user_token")
     val THEME = stringPreferencesKey("app_theme")
-    val NAME = stringPreferencesKey("user_name")
+    val USERINFO = stringPreferencesKey("user_info")
 }

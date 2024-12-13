@@ -8,6 +8,8 @@ import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
 import com.arash.altafi.chatandroid.utils.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,25 +18,25 @@ class MainViewModel @Inject constructor(
     private val jsonUtils: JsonUtils
 ) : BaseViewModel() {
 
-    private val _liveIsConnected = MutableLiveData<Boolean>()
-    val liveIsConnected: LiveData<Boolean>
+    private val _liveIsConnected = MutableStateFlow<Boolean?>(null)
+    val liveIsConnected: StateFlow<Boolean?>
         get() = _liveIsConnected
 
-    private val _liveUnAuthorized = MutableLiveData<ReceiveMessage>()
-    val liveUnAuthorized: LiveData<ReceiveMessage>
+    private val _liveUnAuthorized = MutableStateFlow<ReceiveMessage?>(null)
+    val liveUnAuthorized: StateFlow<ReceiveMessage?>
         get() = _liveUnAuthorized
 
-    private val _liveError = MutableLiveData<ReceiveMessage>()
-    val liveError: LiveData<ReceiveMessage>
+    private val _liveError = MutableStateFlow<ReceiveMessage?>(null)
+    val liveError: StateFlow<ReceiveMessage?>
         get() = _liveError
 
-    private val _liveErrorConvert = MutableLiveData<String>()
-    val liveErrorConvert: LiveData<String>
+    private val _liveErrorConvert = MutableStateFlow<String?>(null)
+    val liveErrorConvert: StateFlow<String?>
         get() = _liveErrorConvert
 
     init {
         repository.isConnected = {
-            _liveIsConnected.postValue(it)
+            _liveIsConnected.value = it
         }
     }
 
@@ -43,9 +45,9 @@ class MainViewModel @Inject constructor(
             val receiveError =
                 jsonUtils.getSafeObject<ReceiveMessage>(eventData.toString())
             receiveError.onSuccess {
-                _liveUnAuthorized.postValue(it)
+                _liveUnAuthorized.value = it
             }.onFailure {
-                _liveErrorConvert.postValue(it.message)
+                _liveErrorConvert.value = it.message
             }
         }
     }
@@ -55,9 +57,9 @@ class MainViewModel @Inject constructor(
             val receiveError =
                 jsonUtils.getSafeObject<ReceiveMessage>(eventData.toString())
             receiveError.onSuccess {
-                _liveError.postValue(it)
+                _liveError.value = it
             }.onFailure {
-                _liveErrorConvert.postValue(it.message)
+                _liveErrorConvert.value = it.message
             }
         }
     }
@@ -70,4 +72,11 @@ class MainViewModel @Inject constructor(
         repository.disconnect()
     }
 
+    fun resetErrorState() {
+        _liveError.value = null
+    }
+
+    fun resetUnAuthorizedState() {
+        _liveUnAuthorized.value = null
+    }
 }

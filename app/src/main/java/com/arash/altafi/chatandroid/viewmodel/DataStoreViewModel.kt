@@ -2,6 +2,7 @@ package com.arash.altafi.chatandroid.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.arash.altafi.chatandroid.data.model.UserInfoModel
 import com.arash.altafi.chatandroid.utils.base.BaseViewModel
 import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +16,9 @@ class DataStoreViewModel @Inject constructor(
     val cachedToken: LiveData<String>
         get() = _cachedToken
 
-    private val _cachedName = MutableLiveData<String>()
-    val cachedName: LiveData<String>
-        get() = _cachedName
+    private val _cachedUserInfo = MutableLiveData<UserInfoModel>()
+    val cachedUserInfo: LiveData<UserInfoModel>
+        get() = _cachedUserInfo
 
     private val _cachedTheme = MutableLiveData<String>()
     val cachedTheme: LiveData<String>
@@ -33,7 +34,7 @@ class DataStoreViewModel @Inject constructor(
 
     init {
         getToken()
-        getName()
+        getUserInfo()
         getTheme()
     }
 
@@ -44,6 +45,7 @@ class DataStoreViewModel @Inject constructor(
         liveError = _liveError,
         liveLoading = _liveLoading
     )
+
     fun setToken(value: String) = callCache(
         cacheCall = repository.setToken(value),
         liveResult = null,
@@ -52,14 +54,22 @@ class DataStoreViewModel @Inject constructor(
     )
 
     // Name
-    fun getName() = callCache(
-        cacheCall = repository.getName(),
-        liveResult = _cachedName,
+    fun getUserInfo() = callCache(
+        cacheCall = repository.getUserInfo(),
+        liveResult = _cachedUserInfo,
         liveError = _liveError,
         liveLoading = _liveLoading
     )
-    fun setName(value: String) = callCache(
-        cacheCall = repository.setName(value),
+
+    fun setUserInfo(value: UserInfoModel) = callCache(
+        cacheCall = repository.setUserInfo(value),
+        liveResult = null,
+        liveError = _liveError,
+        liveLoading = _liveLoading
+    )
+
+    fun clearUserInfo() = callCache(
+        cacheCall = repository.setUserInfo(UserInfoModel()),
         liveResult = null,
         liveError = _liveError,
         liveLoading = _liveLoading
@@ -72,12 +82,14 @@ class DataStoreViewModel @Inject constructor(
         liveError = _liveError,
         liveLoading = _liveLoading
     )
+
     fun setTheme(theme: String) = callCache(
         cacheCall = repository.setTheme(theme),
         liveResult = null,
         liveError = _liveError,
         liveLoading = _liveLoading
     )
+
     fun changeTheme() = callCache(
         cacheCall = repository.changeTheme(),
         liveResult = null,

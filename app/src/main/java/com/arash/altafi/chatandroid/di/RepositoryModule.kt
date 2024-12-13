@@ -8,6 +8,7 @@ import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.data.repository.UploadRepository
 import com.arash.altafi.chatandroid.utils.EncryptionUtils
 import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
+import com.arash.altafi.chatandroid.utils.JsonUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,8 +23,9 @@ object RepositoryModule {
     @Provides
     fun provideDataStoreRepository(
         dataStore: DataStore<Preferences>,
-        encryptionUtils: EncryptionUtils
-    ) = DataStoreRepository(dataStore, encryptionUtils)
+        encryptionUtils: EncryptionUtils,
+        jsonUtils: JsonUtils
+    ) = DataStoreRepository(dataStore, encryptionUtils, jsonUtils)
 
     @Singleton
     @Provides

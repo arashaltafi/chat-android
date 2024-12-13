@@ -1,14 +1,8 @@
-package com.arash.altafi.chatandroid.data.model.res
+package com.arash.altafi.chatandroid.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class ReceiveVerify(
-    @SerializedName("message")
-    val message: String,
-
-    @SerializedName("token")
-    val token: String? = null,
-
+data class UserInfoModel(
     @SerializedName("id")
     val id: String? = null,
 
@@ -20,4 +14,7 @@ data class ReceiveVerify(
 
     @SerializedName("avatar")
     val avatar: String? = null,
+
+    @SerializedName("token")
+    val token: String? = null,
 )
