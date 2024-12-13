@@ -9,15 +9,15 @@ data class ReceiveUsersResponse(
 
 data class ReceiveUsers(
     @SerializedName("id")
-    val id: String,
+    val id: String? = null,
     @SerializedName("name")
-    val name: String,
+    val name: String? = null,
     @SerializedName("family")
-    val family: String,
+    val family: String? = null,
     @SerializedName("avatar")
-    val avatar: String,
+    val avatar: String? = null,
     @SerializedName("phone")
-    val phone: String,
+    val phone: String? = null,
     @SerializedName("lastSeen")
-    val lastSeen: String,
+    val lastSeen: String? = null,
 )
