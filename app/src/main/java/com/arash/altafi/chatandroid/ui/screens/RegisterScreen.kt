@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
+import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
 
@@ -66,7 +67,7 @@ fun RegisterScreen(navController: NavController) {
     LaunchedEffect(liveRegister) {
         liveRegister?.message?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            navController.navigate("verify/$mobile")
+            navController.navigate(Route.Verify(mobile))
             authViewModel.resetRegisterState()
         }
     }

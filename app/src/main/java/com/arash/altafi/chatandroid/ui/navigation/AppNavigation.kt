@@ -73,11 +73,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.ChatAndroidTheme
 import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
@@ -519,23 +521,23 @@ fun AppNavigation() {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "splash",
+                    startDestination = Route.Splash,
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    composable("splash") {
+                    composable<Route.Splash> {
                         SplashScreen(navController)
                     }
-                    composable("login") {
+                    composable<Route.Login> {
                         LoginScreen(navController)
                     }
-                    composable("register") {
+                    composable<Route.Register> {
                         RegisterScreen(navController)
                     }
-                    composable("verify/{mobile}") { backStackEntry ->
-                        val mobile = backStackEntry.arguments?.getString("mobile") ?: "0"
-                        VerifyScreen(navController, mobile)
+                    composable<Route.Verify> { backStackEntry: NavBackStackEntry ->
+                        val args = backStackEntry.toRoute<Route.Verify>()
+                        VerifyScreen(navController, args.mobile)
                     }
-                    composable("dialog") {
+                    composable<Route.Dialog> {
                         DialogScreen(navController)
                     }
                     composable("chat") {

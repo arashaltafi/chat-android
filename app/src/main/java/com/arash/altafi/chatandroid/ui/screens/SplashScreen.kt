@@ -15,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
 
 @Composable
@@ -29,7 +30,7 @@ fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         delay(2000)
         navController.navigate(
-            if (token != null && token != "") "dialog" else "login"
+            if (token != null && token != "") Route.Dialog else Route.Login
         ) {
             popUpTo("splash") { inclusive = true }
         }

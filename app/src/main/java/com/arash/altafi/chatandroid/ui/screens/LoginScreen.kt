@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
+import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
 
@@ -62,7 +63,7 @@ fun LoginScreen(navController: NavController) {
     LaunchedEffect(liveLogin) {
         liveLogin?.message?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            navController.navigate("verify/$mobile")
+            navController.navigate(Route.Verify(mobile))
             authViewModel.resetLoginState()
         }
     }
@@ -190,7 +191,7 @@ fun LoginScreen(navController: NavController) {
                     Button(
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                         onClick = {
-                            navController.navigate("register")
+                            navController.navigate(Route.Register)
                         }
                     ) {
                         Text(
