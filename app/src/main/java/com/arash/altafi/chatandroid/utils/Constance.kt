@@ -12,4 +12,5 @@ object Constance {
     const val VERIFY = "verify"
     const val USERS = "getUsers"
     const val DIALOGS = "getDialogs"
+    const val EDIT_PROFILE = "editProfile"
 }

@@ -91,6 +91,7 @@ fun VerifyScreen(navController: NavController, mobile: String) {
                     family = liveVerify?.family,
                     avatar = liveVerify?.avatar,
                     token = liveVerify?.token,
+                    bio = ""
                 )
             )
             navController.navigate(Route.Dialog) {

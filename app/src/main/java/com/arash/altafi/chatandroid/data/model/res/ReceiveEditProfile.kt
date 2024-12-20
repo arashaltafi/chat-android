@@ -1,23 +1,14 @@
-package com.arash.altafi.chatandroid.data.model
+package com.arash.altafi.chatandroid.data.model.res
 
 import com.google.gson.annotations.SerializedName
 
-data class UserInfoModel(
-    @SerializedName("id")
-    val id: String? = null,
-
+data class ReceiveEditProfile(
     @SerializedName("name")
     val name: String? = null,
-
     @SerializedName("family")
     val family: String? = null,
-
     @SerializedName("avatar")
     val avatar: String? = null,
-
     @SerializedName("bio")
     val bio: String? = null,
-
-    @SerializedName("token")
-    val token: String? = null,
 )
