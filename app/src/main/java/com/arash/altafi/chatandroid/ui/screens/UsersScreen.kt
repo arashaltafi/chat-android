@@ -36,6 +36,9 @@ import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.UsersViewModel
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.navigation.Route
+import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
+import com.arash.altafi.chatandroid.utils.ext.getDateClassified
+import saman.zamani.persiandate.PersianDate
 
 @Composable
 fun UsersScreen(navController: NavController) {
@@ -100,8 +103,11 @@ fun UsersScreen(navController: NavController) {
                                 color = Color.Black
                             )
                         }
+                        val lastSeen = it[user].lastSeen ?: "نامشخص"
                         Text(
-                            text = it[user].lastSeen ?: "نامشخص",
+                            text = if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
+                                PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                            },
                             fontSize = 12.sp,
                             fontStyle = FontStyle.Normal,
                             fontFamily = CustomFont,

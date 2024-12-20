@@ -14,4 +14,10 @@
     <string name="name">نام</string>
     <string name="family">نام خانوادگی</string>
     <string name="submit">تایید</string>
+    <string name="today">امروز</string>
+    <string name="yesterday">دیروز</string>
+    <string name="online">آنلاین</string>
+    <string name="offline">آفلاین</string>
+    <string name="typing">در حال تایپ …</string>
+    <string name="write_hint">بنویسید …</string>
 </resources>
