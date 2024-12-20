@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.UserInfoModel
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
+import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
 import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
@@ -92,7 +93,7 @@ fun VerifyScreen(navController: NavController, mobile: String) {
                     token = liveVerify?.token,
                 )
             )
-            navController.navigate("dialog") {
+            navController.navigate(Route.Dialog) {
                 popUpTo("verify") { inclusive = true }
             }
         }

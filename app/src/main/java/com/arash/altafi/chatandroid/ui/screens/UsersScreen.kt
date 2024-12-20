@@ -35,6 +35,7 @@ import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.UsersViewModel
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.navigation.Route
 
 @Composable
 fun UsersScreen(navController: NavController) {
@@ -63,7 +64,7 @@ fun UsersScreen(navController: NavController) {
                         containerColor = colorResource(R.color.gray_300)
                     ),
                     onClick = {
-                        navController.navigate("dialog")
+                        navController.navigate(Route.Dialog)
                     }
                 ) {
                     Row(
@@ -95,14 +96,16 @@ fun UsersScreen(navController: NavController) {
                                 text = it[user].name + " " + it[user].family,
                                 fontSize = 16.sp,
                                 fontStyle = FontStyle.Normal,
-                                fontFamily = CustomFont
+                                fontFamily = CustomFont,
+                                color = Color.Black
                             )
                         }
                         Text(
                             text = it[user].lastSeen ?: "نامشخص",
                             fontSize = 12.sp,
                             fontStyle = FontStyle.Normal,
-                            fontFamily = CustomFont
+                            fontFamily = CustomFont,
+                            color = Color.Black
                         )
                     }
                 }
@@ -124,7 +127,7 @@ fun UsersScreen(navController: NavController) {
                     fontFamily = CustomFont,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Normal
+                    fontStyle = FontStyle.Normal,
                 )
 
                 LottieComponent(

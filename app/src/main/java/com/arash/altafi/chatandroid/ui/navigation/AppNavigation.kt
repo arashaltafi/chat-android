@@ -106,6 +106,7 @@ import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 fun AppNavigation() {
     val context = LocalContext.current
     val activity = (context as? Activity)
+    val packageName = context.packageName
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -131,7 +132,7 @@ fun AppNavigation() {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             dataStoreViewModel.clearAll()
             drawerState.close()
-            navController.navigate("login")
+            navController.navigate(Route.Login)
             authViewModel.resetLogoutState()
         }
     }
@@ -153,7 +154,7 @@ fun AppNavigation() {
         liveUnAuthorized?.message?.let {
             dataStoreViewModel.setToken("")
             dataStoreViewModel.clearUserInfo()
-            navController.navigate("login") {
+            navController.navigate(Route.Login) {
                 popUpTo("dialog") { inclusive = true }
             }
         }
@@ -190,11 +191,30 @@ fun AppNavigation() {
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
-    val isSplashScreen = currentDestination == "splash"
-    val isDialogScreen = currentDestination == "dialog"
-    val allowBottomBar = arrayOf("dialog", "chat_room", "profile", "setting")
-    val allowTopBar = arrayOf("users", "chat", "dialog", "chat_room", "profile", "setting")
-    val allowNavigationBar = arrayOf("users", "chat", "dialog", "chat_room", "profile", "setting")
+    val isSplashScreen = currentDestination == context.packageName + Route.Splash.route
+    val isDialogScreen = currentDestination == context.packageName + Route.Dialog.route
+    val allowBottomBar = arrayOf<String>(
+        packageName + Route.Dialog.route,
+        packageName + Route.ChatRoom.route,
+        packageName + Route.Profile.route,
+        packageName + Route.Setting.route
+    )
+    val allowTopBar = arrayOf<String>(
+        packageName + Route.Users.route,
+        packageName + Route.Chat.route,
+        packageName + Route.Dialog.route,
+        packageName + Route.ChatRoom.route,
+        packageName + Route.Profile.route,
+        packageName + Route.Setting.route
+    )
+    val allowNavigationBar = arrayOf<String>(
+        packageName + Route.Users.route,
+        packageName + Route.Chat.route,
+        packageName + Route.Dialog.route,
+        packageName + Route.ChatRoom.route,
+        packageName + Route.Profile.route,
+        packageName + Route.Setting.route
+    )
 
     var isScrolled by remember { mutableStateOf(false) }
 
@@ -503,7 +523,7 @@ fun AppNavigation() {
                     AnimatedVisibility(visible = fabVisible && isDialogScreen) {
                         FloatingActionButton(
                             onClick = {
-                                navController.navigate("users")
+                                navController.navigate(Route.Users)
                             },
                             containerColor = MaterialTheme.colorScheme.secondary,
                             shape = RoundedCornerShape(
@@ -540,19 +560,19 @@ fun AppNavigation() {
                     composable<Route.Dialog> {
                         DialogScreen(navController)
                     }
-                    composable("chat") {
+                    composable<Route.Chat> {
                         ChatScreen(navController)
                     }
-                    composable("profile") {
+                    composable<Route.Profile> {
                         ProfileScreen(navController)
                     }
-                    composable("setting") {
+                    composable<Route.Setting> {
                         SettingScreen(navController)
                     }
-                    composable("users") {
+                    composable<Route.Users> {
                         UsersScreen(navController)
                     }
-                    composable("chat_room") {
+                    composable<Route.ChatRoom> {
                         ChatRoomScreen(navController)
                     }
                 }

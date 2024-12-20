@@ -1,7 +1,5 @@
 package com.arash.altafi.chatandroid.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.arash.altafi.chatandroid.data.model.req.RequestIntroduce
 import com.arash.altafi.chatandroid.data.model.req.RequestSendLogin
 import com.arash.altafi.chatandroid.data.model.req.RequestSendLogout
@@ -15,7 +13,6 @@ import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
 import com.arash.altafi.chatandroid.utils.base.BaseViewModel
-import com.arash.altafi.chatandroid.utils.ext.viewModelIO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -128,22 +125,25 @@ class AuthViewModel @Inject constructor(
     }
 
     fun sendIntroduce() {
-        if (introduceSentSuccessfully) return
+        try {
+            if (introduceSentSuccessfully) return
 
-        val requestIntroduce = RequestIntroduce(
-            token = dataStoreRepository.getTokenString()
-        )
+            val requestIntroduce = RequestIntroduce(
+                token = dataStoreRepository.getTokenString()
+            )
 
-        repository.emitAndReceive(
-            Constance.INTRODUCE,
-            jsonUtils.toCustomJson(requestIntroduce)
-        ) { eventData ->
-            val receiveError =
-                jsonUtils.getSafeObject<ReceiveIntroduce>(eventData.toString())
-            receiveError.onSuccess {
-                _liveIntroduce.value = it
-                introduceSentSuccessfully = true
+            repository.emitAndReceive(
+                Constance.INTRODUCE,
+                jsonUtils.toCustomJson(requestIntroduce)
+            ) { eventData ->
+                val receiveError =
+                    jsonUtils.getSafeObject<ReceiveIntroduce>(eventData.toString())
+                receiveError.onSuccess {
+                    _liveIntroduce.value = it
+                    introduceSentSuccessfully = true
+                }
             }
+        } catch (_: Exception) {
         }
     }
 
