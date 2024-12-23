@@ -1,5 +1,8 @@
 package com.arash.altafi.chatandroid.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.arash.altafi.chatandroid.data.model.UserInfoModel
 import com.arash.altafi.chatandroid.data.model.req.RequestSendEditProfile
 import com.arash.altafi.chatandroid.data.model.res.ReceiveEditProfile
 import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
@@ -22,6 +25,29 @@ class ProfileViewModel @Inject constructor(
     private val _liveEditProfile = MutableStateFlow<ReceiveEditProfile?>(null)
     val liveEditProfile: StateFlow<ReceiveEditProfile?>
         get() = _liveEditProfile
+
+    private val _liveProfile = MutableLiveData<UserInfoModel>()
+    val liveProfile: LiveData<UserInfoModel>
+        get() = _liveProfile
+
+    private val _liveError = MutableLiveData<Boolean>()
+    val liveError: LiveData<Boolean>
+        get() = _liveError
+
+    private val _liveLoading = MutableLiveData<Boolean>()
+    val liveLoading: LiveData<Boolean>
+        get() = _liveLoading
+
+    init {
+        getUserInfo()
+    }
+
+    private fun getUserInfo() = callCache(
+        cacheCall = dataStoreRepository.getUserInfo(),
+        liveResult = _liveProfile,
+        liveError = _liveError,
+        liveLoading = _liveLoading
+    )
 
     fun sendEditProfile(name: String, family: String, bio: String) {
         val requestSendEditProfile = RequestSendEditProfile(
