@@ -498,13 +498,7 @@ fun AppNavigation() {
                                         },
                                         onClick = {
                                             navigationSelectedItem = index
-                                            navController.navigate(navigationItem.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
+                                            navController.navigate(navigationItem.route)
                                         },
                                         colors = NavigationBarItemDefaults.colors(
                                             selectedIconColor = Color.Magenta,

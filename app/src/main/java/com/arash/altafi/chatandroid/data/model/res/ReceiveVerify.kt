@@ -9,6 +9,9 @@ data class ReceiveVerify(
     @SerializedName("token")
     val token: String? = null,
 
+    @SerializedName("phone")
+    val phone: String? = null,
+
     @SerializedName("id")
     val id: String? = null,
 

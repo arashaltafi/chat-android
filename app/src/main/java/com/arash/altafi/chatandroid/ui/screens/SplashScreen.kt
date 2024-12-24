@@ -32,7 +32,7 @@ fun SplashScreen(navController: NavController) {
         navController.navigate(
             if (token != null && token != "") Route.Dialog else Route.Login
         ) {
-            popUpTo("splash") { inclusive = true }
+            popUpTo(Route.Splash) { inclusive = true }
         }
     }
 

@@ -20,4 +20,7 @@ data class UserInfoModel(
 
     @SerializedName("token")
     val token: String? = null,
+
+    @SerializedName("phone")
+    val phone: String? = null,
 )

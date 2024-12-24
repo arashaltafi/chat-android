@@ -10,7 +10,11 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -29,7 +33,7 @@ fun ProfileScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(16.dp, 10.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -49,19 +53,48 @@ fun ProfileScreen(navController: NavController) {
             contentScale = ContentScale.Crop,
         )
 
-        Text(
-            modifier = Modifier.padding(top = 12.dp),
-            text = liveProfile?.name + " " + liveProfile?.family,
-            fontFamily = CustomFont,
-            fontSize = 20.sp,
-            color = Color.White
-        )
+        Row(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Text(
+                modifier = Modifier
+                    .width(LocalConfiguration.current.screenWidthDp.dp * 0.5f),
+                text = liveProfile?.name + " " + liveProfile?.family,
+                fontFamily = CustomFont,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                color = Color.White
+            )
+
+            Text(
+                modifier = Modifier
+                    .width(LocalConfiguration.current.screenWidthDp.dp * 0.5f),
+                text = liveProfile?.phone ?: "",
+                fontFamily = CustomFont,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                color = Color.White
+            )
+        }
 
         Text(
-            modifier = Modifier.padding(top = 12.dp),
-            text = liveProfile?.id ?: "",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            fontStyle = FontStyle.Normal,
+            textAlign = TextAlign.Justify,
+//            text = liveProfile?.bio ?: "",
+            text = "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.",
             fontFamily = CustomFont,
-            fontSize = 20.sp,
+            fontSize = 12.sp,
             color = Color.White
         )
     }
