@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -21,6 +22,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
+import com.arash.altafi.chatandroid.R
 
 @Composable
 fun ProfileScreen(navController: NavController) {
@@ -33,25 +35,36 @@ fun ProfileScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp, 10.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 10.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(
-            model = liveProfile?.avatar,
-            contentDescription = liveProfile?.name,
+        Box(
             modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .shadow(8.dp)
-                .border(
-                    1.dp,
-                    Color.White,
-                    CircleShape
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(
+                    color = colorResource(R.color.transparent_black),
+                    shape = RoundedCornerShape(bottomEnd = 300.dp, bottomStart = 300.dp)
                 ),
-            contentScale = ContentScale.Crop,
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            AsyncImage(
+                model = liveProfile?.avatar,
+                contentDescription = liveProfile?.name,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .shadow(8.dp)
+                    .border(
+                        1.dp,
+                        Color.White,
+                        CircleShape
+                    ),
+                contentScale = ContentScale.Crop,
+            )
+        }
 
         Row(
             modifier = Modifier

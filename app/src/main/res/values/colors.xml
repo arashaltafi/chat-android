@@ -97,4 +97,6 @@
     <color name="pink_700">#C2185B</color>
     <color name="pink_800">#AD1457</color>
     <color name="pink_900">#880E4F</color>
+
+    <color name="transparent_black">#aa000000</color>"
 </resources>
