@@ -6,6 +6,7 @@
     <string name="dialog">دیالوگ</string>
     <string name="chat_room">چت روم</string>
     <string name="login">ورود</string>
+    <string name="update">به روز رسانی</string>
     <string name="logout">خروج</string>
     <string name="register">ثبت نام</string>
     <string name="verify">ثبت کد تایید</string>
@@ -13,6 +14,7 @@
     <string name="otp">کد تایید</string>
     <string name="name">نام</string>
     <string name="family">نام خانوادگی</string>
+    <string name="bio">بیوگرافی</string>
     <string name="submit">تایید</string>
     <string name="today">امروز</string>
     <string name="yesterday">دیروز</string>

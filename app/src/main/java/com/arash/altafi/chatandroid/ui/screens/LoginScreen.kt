@@ -123,7 +123,7 @@ fun LoginScreen(navController: NavController) {
                         ),
                         value = mobile,
                         onValueChange = { newValue ->
-                            mobile = newValue
+                            if (newValue.length <= 11) mobile = newValue
                         },
                         label = {
                             Text(
