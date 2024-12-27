@@ -48,14 +48,19 @@ fun ProfileScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val profileViewModel: ProfileViewModel = hiltViewModel()
-    val liveEditProfile by profileViewModel.liveEditProfile.collectAsState()
     val liveProfile by profileViewModel.liveProfile.observeAsState()
 
-    var isEditMode by remember { mutableStateOf(false) }
+    var bio by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var family by remember { mutableStateOf("") }
 
-    var bio by remember { mutableStateOf(liveProfile?.bio ?: "") }
-    var name by remember { mutableStateOf(liveProfile?.name ?: "") }
-    var family by remember { mutableStateOf(liveProfile?.family ?: "") }
+    LaunchedEffect(liveProfile) {
+        bio = liveProfile?.bio ?: ""
+        name = liveProfile?.name ?: ""
+        family = liveProfile?.family ?: ""
+    }
+
+    var isEditMode by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -302,6 +307,10 @@ fun ProfileScreen(navController: NavController) {
                             family = family,
                             bio = bio
                         )
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        isEditMode = false
+                        Toast.makeText(context, "پروفایل شما با موفقیت بروزرسانی شد", Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier
@@ -332,7 +341,7 @@ fun ProfileScreen(navController: NavController) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     color = Color.White
                 )
 
@@ -352,7 +361,18 @@ fun ProfileScreen(navController: NavController) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp),
+                    .padding(top = 48.dp),
+                textAlign = TextAlign.Start,
+                text = context.getString(R.string.bio) + ":",
+                fontFamily = CustomFont,
+                fontSize = 16.sp,
+                color = Color.White
+            )
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
                 fontStyle = FontStyle.Normal,
                 textAlign = TextAlign.Justify,
                 text = liveProfile?.bio ?: "",
