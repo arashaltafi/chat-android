@@ -1,11 +1,9 @@
 package com.arash.altafi.chatandroid.ui.navigation
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -74,7 +72,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -203,7 +200,7 @@ fun AppNavigation() {
         packageName + Route.Users.route,
         packageName + Route.Chat.route,
         packageName + Route.Dialog.route,
-        packageName + Route.ChatRoom.route,
+//        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
