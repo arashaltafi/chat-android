@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,12 +40,16 @@ fun ChatRoomScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val chatRoomViewModel: ChatRoomViewModel = hiltViewModel()
-//    val liveProfile by chatRoomViewModel.liveProfile.observeAsState()
+    val liveGetChatRoom by chatRoomViewModel.liveGetChatRoom.observeAsState()
+    val liveUserCount by chatRoomViewModel.liveUserCount.observeAsState()
 
     var message by remember { mutableStateOf("") }
+    var usesOnline by remember { mutableIntStateOf(0) }
+    var usesCount by remember { mutableIntStateOf(0) }
 
-    val listItems = (1..50).map { it ->
-        "Item $it"
+    LaunchedEffect(arrayOf(liveUserCount, liveGetChatRoom)) {
+        usesOnline = liveUserCount?.first ?: liveGetChatRoom?.usersOnline ?: 0
+        usesCount = liveUserCount?.second ?: liveGetChatRoom?.usersCount ?: 0
     }
 
     Box(
@@ -103,13 +108,13 @@ fun ChatRoomScreen(navController: NavController) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "کل کاربران:" + "123",
+                        text = "کل کاربران:" + liveGetChatRoom?.usersCount,
                         color = Color.White,
                         fontFamily = CustomFont,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "آنلاین:" + "111",
+                        text = "آنلاین:$usesOnline",
                         color = colorResource(R.color.green_600),
                         fontFamily = CustomFont,
                         fontSize = 12.sp
@@ -124,7 +129,7 @@ fun ChatRoomScreen(navController: NavController) {
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(listItems.size) { item ->
+                items(liveGetChatRoom?.messages?.size ?: 0) { item ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -134,7 +139,7 @@ fun ChatRoomScreen(navController: NavController) {
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
-                            text = listItems[item],
+                            text = liveGetChatRoom?.messages?.get(item)?.text ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Black
                         )

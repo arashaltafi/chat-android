@@ -13,4 +13,6 @@ object Constance {
     const val USERS = "getUsers"
     const val DIALOGS = "getDialogs"
     const val EDIT_PROFILE = "editProfile"
+    const val GET_CHAT_ROOM = "getMessagesChatRoom"
+    const val USER_STATUS_CHAT_ROOM = "userStatusChatRoom"
 }
