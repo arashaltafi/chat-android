@@ -1,15 +1,19 @@
 package com.arash.altafi.chatandroid.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.arash.altafi.chatandroid.data.model.req.RequestSendMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessagesChatRoom
+import com.arash.altafi.chatandroid.data.model.res.ReceiveMessage
+import com.arash.altafi.chatandroid.data.model.res.ReceiveMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveUserStatusChatRoom
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
 import com.arash.altafi.chatandroid.utils.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,14 +25,23 @@ class ChatRoomViewModel @Inject constructor(
     init {
         getMessagesChatRoom()
         receiveUsersStatus()
+        receiveMessageChatRoom()
     }
 
-    private val _liveGetChatRoom = MutableLiveData<ReceiveGetMessagesChatRoom>()
-    val liveGetChatRoom: LiveData<ReceiveGetMessagesChatRoom>
+    private val _liveGetChatRoom = MutableStateFlow<ReceiveGetMessagesChatRoom?>(null)
+    val liveGetChatRoom: StateFlow<ReceiveGetMessagesChatRoom?>
         get() = _liveGetChatRoom
 
-    private val _liveUserCount = MutableLiveData<Pair<Int, Int>>()
-    val liveUserCount: LiveData<Pair<Int, Int>>
+    private val _liveSendChatRoom = MutableStateFlow<ReceiveMessage?>(null)
+    val liveSendChatRoom: StateFlow<ReceiveMessage?>
+        get() = _liveSendChatRoom
+
+    private val _liverMessageChatRoom = MutableStateFlow<ReceiveMessageChatRoom?>(null)
+    val liverMessageChatRoom: StateFlow<ReceiveMessageChatRoom?>
+        get() = _liverMessageChatRoom
+
+    private val _liveUserCount = MutableStateFlow<Pair<Int, Int>?>(null)
+    val liveUserCount: StateFlow<Pair<Int, Int>?>
         get() = _liveUserCount
 
     private fun getMessagesChatRoom() {
@@ -38,18 +51,53 @@ class ChatRoomViewModel @Inject constructor(
             val receiveError =
                 jsonUtils.getSafeObject<ReceiveGetMessagesChatRoom>(eventData.toString())
             receiveError.onSuccess {
-                _liveGetChatRoom.postValue(it)
+                viewModelScope.launch {
+                    _liveGetChatRoom.emit(it)
+                }
+            }
+        }
+    }
+
+    private fun sendMessagesChatRoom(message: String? = null, url: String? = null) {
+        val requestSendMessageChatRoom = RequestSendMessageChatRoom(
+            text = message,
+            url = url,
+        )
+
+        repository.emitAndReceive(
+            Constance.SEND_CHAT_ROOM,
+            jsonUtils.toCustomJson(requestSendMessageChatRoom)
+        ) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveMessage>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liveSendChatRoom.emit(it)
+                }
+            }
+        }
+    }
+
+    private fun receiveMessageChatRoom() {
+        repository.onReceivedData(Constance.RECEIVE_MESSAGE_CHAT_ROOM) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveMessageChatRoom>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liverMessageChatRoom.emit(it)
+                }
             }
         }
     }
 
     private fun receiveUsersStatus() {
         repository.onReceivedData(Constance.USER_STATUS_CHAT_ROOM) { eventData ->
-            Log.i("test123321", "receiveUsersStatus: ${eventData.toString()}")
             val receiveError =
                 jsonUtils.getSafeObject<ReceiveUserStatusChatRoom>(eventData.toString())
             receiveError.onSuccess {
-                _liveUserCount.postValue(Pair(it.usersOnline, it.usersCount))
+                viewModelScope.launch {
+                    _liveUserCount.emit(Pair(it.usersOnline, it.usersCount))
+                }
             }
         }
     }

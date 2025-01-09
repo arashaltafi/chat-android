@@ -10,7 +10,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,16 +39,18 @@ fun ChatRoomScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val chatRoomViewModel: ChatRoomViewModel = hiltViewModel()
-    val liveGetChatRoom by chatRoomViewModel.liveGetChatRoom.observeAsState()
-    val liveUserCount by chatRoomViewModel.liveUserCount.observeAsState()
+    val liveGetChatRoom by chatRoomViewModel.liveGetChatRoom.collectAsState()
+    val liveUserCount by chatRoomViewModel.liveUserCount.collectAsState()
+    val liverMessageChatRoom by chatRoomViewModel.liverMessageChatRoom.collectAsState()
+    val liveSendChatRoom by chatRoomViewModel.liveSendChatRoom.collectAsState()
 
     var message by remember { mutableStateOf("") }
-    var usesOnline by remember { mutableIntStateOf(0) }
-    var usesCount by remember { mutableIntStateOf(0) }
+    var userOnline by remember { mutableIntStateOf(0) }
+    var userCount by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(arrayOf(liveUserCount, liveGetChatRoom)) {
-        usesOnline = liveUserCount?.first ?: liveGetChatRoom?.usersOnline ?: 0
-        usesCount = liveUserCount?.second ?: liveGetChatRoom?.usersCount ?: 0
+        userOnline = liveUserCount?.first ?: liveGetChatRoom?.usersOnline ?: 0
+        userCount = liveUserCount?.second ?: liveGetChatRoom?.usersCount ?: 0
     }
 
     Box(
@@ -108,13 +109,13 @@ fun ChatRoomScreen(navController: NavController) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "کل کاربران:" + liveGetChatRoom?.usersCount,
+                        text = "کل کاربران:$userCount",
                         color = Color.White,
                         fontFamily = CustomFont,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "آنلاین:$usesOnline",
+                        text = "آنلاین:$userOnline",
                         color = colorResource(R.color.green_600),
                         fontFamily = CustomFont,
                         fontSize = 12.sp
