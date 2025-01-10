@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -30,15 +32,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ChatRoomViewModel
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
+import com.arash.altafi.chatandroid.utils.ext.getDateClassified
+import saman.zamani.persiandate.PersianDate
 
 @Composable
 fun ChatRoomScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val chatRoomViewModel: ChatRoomViewModel = hiltViewModel()
+
     val liveGetChatRoom by chatRoomViewModel.liveGetChatRoom.collectAsState()
     val liveUserCount by chatRoomViewModel.liveUserCount.collectAsState()
     val liverMessageChatRoom by chatRoomViewModel.liverMessageChatRoom.collectAsState()
@@ -123,27 +130,112 @@ fun ChatRoomScreen(navController: NavController) {
                 }
             }
 
+            // Chat Messages
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.Bottom,
+                reverseLayout = true
             ) {
                 items(liveGetChatRoom?.messages?.size ?: 0) { item ->
+                    val isSendByMe = liveGetChatRoom?.messages?.get(item)?.isSendedFromMe == true
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
-                            .background(Color.Blue)
                             .padding(8.dp),
-                        contentAlignment = Alignment.CenterStart
+                        contentAlignment = if (isSendByMe) Alignment.CenterStart else Alignment.CenterEnd
                     ) {
-                        Text(
-                            text = liveGetChatRoom?.messages?.get(item)?.text ?: "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Black
-                        )
+                        if (isSendByMe) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(0.9f)
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .background(
+                                            color = colorResource(R.color.gray_200),
+                                            shape = RoundedCornerShape(
+                                                topEnd = 8.dp,
+                                                topStart = 4.dp,
+                                                bottomEnd = 8.dp,
+                                                bottomStart = 0.dp,
+                                            )
+                                        )
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    textAlign = TextAlign.Justify,
+                                    text = liveGetChatRoom?.messages?.get(item)?.text ?: "",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black,
+                                    fontFamily = CustomFont
+                                )
+                                Text(
+                                    modifier = Modifier.padding(top = 6.dp),
+                                    text = PersianDate(
+                                        liveGetChatRoom?.messages?.get(item)?.sendTime?.toLong()
+                                            ?.fixSummerTime()
+                                    ).getDateClassified(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White,
+                                    fontFamily = CustomFont
+                                )
+                            }
+                        } else {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(0.9f)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(end = 12.dp)
+                                        .weight(1f)
+                                ) {
+                                    Text(
+                                        modifier = Modifier
+                                            .background(
+                                                color = colorResource(R.color.blue_600),
+                                                shape = RoundedCornerShape(
+                                                    topEnd = 4.dp,
+                                                    topStart = 8.dp,
+                                                    bottomEnd = 0.dp,
+                                                    bottomStart = 8.dp,
+                                                )
+                                            )
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                                            .align(Alignment.End),
+                                        textAlign = TextAlign.Justify,
+                                        text = liveGetChatRoom?.messages?.get(item)?.text ?: "",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White,
+                                        fontFamily = CustomFont
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .padding(top = 6.dp)
+                                            .align(Alignment.End),
+                                        text = PersianDate(
+                                            liveGetChatRoom?.messages?.get(item)?.sendTime?.toLong()
+                                                ?.fixSummerTime()
+                                        ).getDateClassified(),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White,
+                                        fontFamily = CustomFont
+                                    )
+                                }
+                                AsyncImage(
+                                    model = "https://arashaltafi.ir/arash.jpg",
+                                    contentDescription = "arash",
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .clip(CircleShape)
+                                        .border(
+                                            0.5.dp,
+                                            Color.Green,
+                                            CircleShape
+                                        ),
+                                    contentScale = ContentScale.Crop,
+                                )
+                            }
+                        }
                     }
                 }
             }
