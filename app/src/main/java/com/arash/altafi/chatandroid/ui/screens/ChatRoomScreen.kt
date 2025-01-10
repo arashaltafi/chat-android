@@ -1,7 +1,5 @@
 package com.arash.altafi.chatandroid.ui.screens
 
-import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
@@ -25,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -48,13 +47,14 @@ import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
 
-@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun ChatRoomScreen(navController: NavController) {
     val listState = rememberLazyListState()
     val context = LocalContext.current
     val chatRoomViewModel: ChatRoomViewModel = hiltViewModel()
     val profileViewModel: ProfileViewModel = hiltViewModel()
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val liveProfile by profileViewModel.liveProfile.observeAsState()
 
@@ -84,11 +84,13 @@ fun ChatRoomScreen(navController: NavController) {
         }
     }
 
+    // Listen for change users statues
     LaunchedEffect(arrayOf(liveUserCount, liveGetChatRoom)) {
         userOnline = liveUserCount?.first ?: liveGetChatRoom?.usersOnline ?: 0
         userCount = liveUserCount?.second ?: liveGetChatRoom?.usersCount ?: 0
     }
 
+    // Listen for send new message
     LaunchedEffect(liveSendChatRoom) {
         if (liveSendChatRoom?.message == "ok" && liveSendChatRoom?.data != null) {
             listState.animateScrollToItem(0)
@@ -363,7 +365,11 @@ fun ChatRoomScreen(navController: NavController) {
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                chatRoomViewModel.sendMessagesChatRoom(
+                                    message = message
+                                )
+                                keyboardController?.hide()
+                                message = ""
                             }
                         )
                     )

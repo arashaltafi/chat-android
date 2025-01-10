@@ -59,7 +59,7 @@ class ChatRoomViewModel @Inject constructor(
         }
     }
 
-    private fun sendMessagesChatRoom(message: String? = null, url: String? = null) {
+    fun sendMessagesChatRoom(message: String? = null, url: String? = null) {
         val requestSendMessageChatRoom = RequestSendMessageChatRoom(
             text = message,
             url = url,
