@@ -72,7 +72,7 @@ fun ChatRoomScreen(navController: NavController) {
 
     // Initialize messages list from liveGetChatRoom
     LaunchedEffect(arrayOf(liveGetChatRoom, liveProfile)) {
-        if (liveGetChatRoom?.messages != null && liveProfile?.id != null) {
+        if (liveGetChatRoom?.messages != null && liveProfile?.id != null && messages.isEmpty()) {
             messages.clear()
             messages.addAll(liveGetChatRoom!!.messages)
         }
