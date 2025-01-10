@@ -5,6 +5,7 @@ import com.arash.altafi.chatandroid.data.model.req.RequestSendMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessagesChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessage
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessageChatRoom
+import com.arash.altafi.chatandroid.data.model.res.ReceiveSendMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveUserStatusChatRoom
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
@@ -32,8 +33,8 @@ class ChatRoomViewModel @Inject constructor(
     val liveGetChatRoom: StateFlow<ReceiveGetMessagesChatRoom?>
         get() = _liveGetChatRoom
 
-    private val _liveSendChatRoom = MutableStateFlow<ReceiveMessage?>(null)
-    val liveSendChatRoom: StateFlow<ReceiveMessage?>
+    private val _liveSendChatRoom = MutableStateFlow<ReceiveSendMessageChatRoom?>(null)
+    val liveSendChatRoom: StateFlow<ReceiveSendMessageChatRoom?>
         get() = _liveSendChatRoom
 
     private val _liverMessageChatRoom = MutableStateFlow<ReceiveMessageChatRoom?>(null)
@@ -69,7 +70,7 @@ class ChatRoomViewModel @Inject constructor(
             jsonUtils.toCustomJson(requestSendMessageChatRoom)
         ) { eventData ->
             val receiveError =
-                jsonUtils.getSafeObject<ReceiveMessage>(eventData.toString())
+                jsonUtils.getSafeObject<ReceiveSendMessageChatRoom>(eventData.toString())
             receiveError.onSuccess {
                 viewModelScope.launch {
                     _liveSendChatRoom.emit(it)

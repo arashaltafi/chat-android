@@ -1,20 +1,26 @@
 package com.arash.altafi.chatandroid.ui.screens
 
+import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -36,15 +42,21 @@ import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ChatRoomViewModel
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.data.model.res.ReceiveMessages
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
+import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun ChatRoomScreen(navController: NavController) {
-    val scrollState = rememberScrollState()
+    val listState = rememberLazyListState()
     val context = LocalContext.current
     val chatRoomViewModel: ChatRoomViewModel = hiltViewModel()
+    val profileViewModel: ProfileViewModel = hiltViewModel()
+
+    val liveProfile by profileViewModel.liveProfile.observeAsState()
 
     val liveGetChatRoom by chatRoomViewModel.liveGetChatRoom.collectAsState()
     val liveUserCount by chatRoomViewModel.liveUserCount.collectAsState()
@@ -52,12 +64,36 @@ fun ChatRoomScreen(navController: NavController) {
     val liveSendChatRoom by chatRoomViewModel.liveSendChatRoom.collectAsState()
 
     var message by remember { mutableStateOf("") }
+
+    val messages = remember { mutableStateListOf<ReceiveMessages>() }
     var userOnline by remember { mutableIntStateOf(0) }
     var userCount by remember { mutableIntStateOf(0) }
+
+    // Initialize messages list from liveGetChatRoom
+    LaunchedEffect(arrayOf(liveGetChatRoom, liveProfile)) {
+        if (liveGetChatRoom?.messages != null && liveProfile?.id != null) {
+            messages.clear()
+            messages.addAll(liveGetChatRoom!!.messages)
+        }
+    }
+
+    // Listen for new messages from liverMessageChatRoom
+    LaunchedEffect(liverMessageChatRoom) {
+        liverMessageChatRoom?.message?.let {
+            messages.add(it)
+        }
+    }
 
     LaunchedEffect(arrayOf(liveUserCount, liveGetChatRoom)) {
         userOnline = liveUserCount?.first ?: liveGetChatRoom?.usersOnline ?: 0
         userCount = liveUserCount?.second ?: liveGetChatRoom?.usersCount ?: 0
+    }
+
+    LaunchedEffect(liveSendChatRoom) {
+        if (liveSendChatRoom?.message == "ok" && liveSendChatRoom?.data != null) {
+            listState.animateScrollToItem(0)
+            messages.add(liveSendChatRoom!!.data)
+        }
     }
 
     Box(
@@ -137,10 +173,11 @@ fun ChatRoomScreen(navController: NavController) {
                     .weight(1f),
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.Bottom,
-                reverseLayout = true
+                reverseLayout = true,
+                state = listState
             ) {
-                items(liveGetChatRoom?.messages?.size ?: 0) { item ->
-                    val isSendByMe = liveGetChatRoom?.messages?.get(item)?.isSendedFromMe == true
+                items(messages.size) { item ->
+                    val isSendByMe = messages[item].ownerId?.toString() == liveProfile?.id
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -154,7 +191,14 @@ fun ChatRoomScreen(navController: NavController) {
                                 Text(
                                     modifier = Modifier
                                         .background(
-                                            color = colorResource(R.color.gray_200),
+                                            brush = Brush.linearGradient(
+                                                colors = listOf(
+                                                    colorResource(R.color.gray_200),
+                                                    colorResource(R.color.gray_300)
+                                                ),
+                                                start = Offset(0f, 0f), // Top-left
+                                                end = Offset(1000f, 1000f) // Bottom-right
+                                            ),
                                             shape = RoundedCornerShape(
                                                 topEnd = 8.dp,
                                                 topStart = 4.dp,
@@ -164,7 +208,7 @@ fun ChatRoomScreen(navController: NavController) {
                                         )
                                         .padding(horizontal = 16.dp, vertical = 8.dp),
                                     textAlign = TextAlign.Justify,
-                                    text = liveGetChatRoom?.messages?.get(item)?.text ?: "",
+                                    text = messages[item].text ?: "",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color.Black,
                                     fontFamily = CustomFont
@@ -172,7 +216,7 @@ fun ChatRoomScreen(navController: NavController) {
                                 Text(
                                     modifier = Modifier.padding(top = 6.dp),
                                     text = PersianDate(
-                                        liveGetChatRoom?.messages?.get(item)?.sendTime?.toLong()
+                                        messages[item].sendTime?.toLong()
                                             ?.fixSummerTime()
                                     ).getDateClassified(),
                                     style = MaterialTheme.typography.bodySmall,
@@ -192,7 +236,14 @@ fun ChatRoomScreen(navController: NavController) {
                                     Text(
                                         modifier = Modifier
                                             .background(
-                                                color = colorResource(R.color.blue_600),
+                                                brush = Brush.linearGradient(
+                                                    colors = listOf(
+                                                        colorResource(R.color.blue_600),
+                                                        colorResource(R.color.blue_400)
+                                                    ),
+                                                    start = Offset(0f, 0f), // Top-left
+                                                    end = Offset(1000f, 1000f) // Bottom-right
+                                                ),
                                                 shape = RoundedCornerShape(
                                                     topEnd = 4.dp,
                                                     topStart = 8.dp,
@@ -203,7 +254,7 @@ fun ChatRoomScreen(navController: NavController) {
                                             .padding(horizontal = 16.dp, vertical = 8.dp)
                                             .align(Alignment.End),
                                         textAlign = TextAlign.Justify,
-                                        text = liveGetChatRoom?.messages?.get(item)?.text ?: "",
+                                        text = messages[item].text ?: "",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = Color.White,
                                         fontFamily = CustomFont
@@ -213,7 +264,7 @@ fun ChatRoomScreen(navController: NavController) {
                                             .padding(top = 6.dp)
                                             .align(Alignment.End),
                                         text = PersianDate(
-                                            liveGetChatRoom?.messages?.get(item)?.sendTime?.toLong()
+                                            messages[item].sendTime?.toLong()
                                                 ?.fixSummerTime()
                                         ).getDateClassified(),
                                         style = MaterialTheme.typography.bodySmall,

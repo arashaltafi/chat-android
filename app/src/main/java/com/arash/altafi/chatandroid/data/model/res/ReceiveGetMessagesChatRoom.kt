@@ -11,11 +11,23 @@ data class ReceiveGetMessagesChatRoom(
     val usersOnline: Int? = null,
 )
 
+data class ReceiveMessageChatRoom(
+    @SerializedName("message")
+    val message: ReceiveMessages,
+)
+
+data class ReceiveSendMessageChatRoom(
+    @SerializedName("message")
+    val message: String,
+    @SerializedName("data")
+    val data: ReceiveMessages,
+)
+
 data class ReceiveMessages(
     @SerializedName("text")
     val text: String? = null,
     @SerializedName("sendTime")
     val sendTime: Long? = null,
-    @SerializedName("isSendedFromMe")
-    val isSendedFromMe: Boolean? = null,
+    @SerializedName("ownerId")
+    val ownerId: Int? = null,
 )
