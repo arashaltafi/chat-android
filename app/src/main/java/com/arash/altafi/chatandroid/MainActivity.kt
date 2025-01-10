@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.arash.altafi.chatandroid.ui.navigation.AppNavigation
+import com.arash.altafi.chatandroid.ui.screens.ManageDataList
 import com.arash.altafi.chatandroid.utils.language.LocaleUtils
 import com.arash.altafi.chatandroid.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+//            ManageDataList()
             AppNavigation()
         }
     }

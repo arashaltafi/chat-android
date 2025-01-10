@@ -1,5 +1,6 @@
 package com.arash.altafi.chatandroid.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
@@ -80,7 +81,7 @@ fun ChatRoomScreen(navController: NavController) {
     // Listen for new messages from liverMessageChatRoom
     LaunchedEffect(liverMessageChatRoom) {
         liverMessageChatRoom?.message?.let {
-            messages.add(it)
+            messages.add(0, it)
         }
     }
 
@@ -94,7 +95,7 @@ fun ChatRoomScreen(navController: NavController) {
     LaunchedEffect(liveSendChatRoom) {
         if (liveSendChatRoom?.message == "ok" && liveSendChatRoom?.data != null) {
             listState.animateScrollToItem(0)
-            messages.add(liveSendChatRoom!!.data)
+            messages.add(0, liveSendChatRoom!!.data)
         }
     }
 
