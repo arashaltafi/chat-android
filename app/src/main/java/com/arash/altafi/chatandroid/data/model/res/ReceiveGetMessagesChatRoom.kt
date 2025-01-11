@@ -24,6 +24,8 @@ data class ReceiveSendMessageChatRoom(
 )
 
 data class ReceiveMessages(
+    @SerializedName("id")
+    val id: Long? = null,
     @SerializedName("text")
     val text: String? = null,
     @SerializedName("sendTime")
@@ -32,4 +34,6 @@ data class ReceiveMessages(
     val ownerId: Int? = null,
     @SerializedName("avatar")
     val avatar: String? = null,
+    @SerializedName("fullName")
+    val fullName: String? = null,
 )

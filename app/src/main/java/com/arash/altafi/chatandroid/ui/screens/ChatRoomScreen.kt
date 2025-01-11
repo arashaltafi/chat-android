@@ -1,5 +1,6 @@
 package com.arash.altafi.chatandroid.ui.screens
 
+import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -238,6 +240,19 @@ fun ChatRoomScreen(navController: NavController) {
                                 ) {
                                     Text(
                                         modifier = Modifier
+                                            .padding(bottom = 6.dp)
+                                            .fillMaxWidth(0.5f)
+                                            .align(Alignment.End),
+                                        text = messages[item].fullName ?: "",
+                                        maxLines = 1,
+                                        textAlign = TextAlign.End,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        overflow = TextOverflow.Ellipsis,
+                                        color = Color.White,
+                                        fontFamily = CustomFont
+                                    )
+                                    Text(
+                                        modifier = Modifier
                                             .background(
                                                 brush = Brush.linearGradient(
                                                     colors = listOf(
@@ -248,9 +263,9 @@ fun ChatRoomScreen(navController: NavController) {
                                                     end = Offset(1000f, 1000f) // Bottom-right
                                                 ),
                                                 shape = RoundedCornerShape(
-                                                    topEnd = 4.dp,
+                                                    topEnd = 0.dp,
                                                     topStart = 8.dp,
-                                                    bottomEnd = 0.dp,
+                                                    bottomEnd = 4.dp,
                                                     bottomStart = 8.dp,
                                                 )
                                             )
@@ -276,8 +291,9 @@ fun ChatRoomScreen(navController: NavController) {
                                 }
                                 AsyncImage(
                                     model = messages[item].avatar,
-                                    contentDescription = "arash",
+                                    contentDescription = messages[item].fullName,
                                     modifier = Modifier
+                                        .padding(top = 6.dp)
                                         .size(38.dp)
                                         .clip(CircleShape)
                                         .border(
