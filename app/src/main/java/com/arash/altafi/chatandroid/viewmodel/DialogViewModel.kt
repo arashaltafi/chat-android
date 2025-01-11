@@ -1,6 +1,6 @@
 package com.arash.altafi.chatandroid.viewmodel
 
-import com.arash.altafi.chatandroid.data.model.res.ReceiveMessage
+import com.arash.altafi.chatandroid.data.model.res.ReceiveDialog
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
@@ -16,8 +16,8 @@ class DialogViewModel @Inject constructor(
     private var jsonUtils: JsonUtils,
 ) : BaseViewModel() {
 
-    private val _liveGetDialogs = MutableStateFlow<List<ReceiveMessage>?>(null)
-    val liveGetDialogs: StateFlow<List<ReceiveMessage>?>
+    private val _liveGetDialogs = MutableStateFlow<ReceiveDialog?>(null)
+    val liveGetDialogs: StateFlow<ReceiveDialog?>
         get() = _liveGetDialogs
 
     fun getDialogs() {
@@ -25,7 +25,7 @@ class DialogViewModel @Inject constructor(
             Constance.DIALOGS,
         ) { eventData ->
             val receiveError =
-                jsonUtils.getSafeObject<List<ReceiveMessage>>(eventData.toString())
+                jsonUtils.getSafeObject<ReceiveDialog>(eventData.toString())
             receiveError.onSuccess {
                 _liveGetDialogs.value = it
             }
