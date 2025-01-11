@@ -19,6 +19,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -322,28 +323,28 @@ fun ChatRoomScreen(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Card(
-                        modifier = Modifier
-                            .width(LocalConfiguration.current.screenWidthDp.dp * 0.1f),
-                        onClick = {
-                            Toast.makeText(context, "msg: $message", Toast.LENGTH_SHORT).show()
-                        },
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Transparent
-                        ),
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.icon),
-                            contentDescription = context.getString(R.string.app_name),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-
-                    Spacer(Modifier.width(16.dp))
+//                    Card(
+//                        modifier = Modifier
+//                            .width(LocalConfiguration.current.screenWidthDp.dp * 0.1f),
+//                        onClick = {
+//                            Toast.makeText(context, "msg: $message", Toast.LENGTH_SHORT).show()
+//                        },
+//                        colors = CardDefaults.cardColors(
+//                            containerColor = Color.Transparent
+//                        ),
+//                    ) {
+//                        Image(
+//                            painter = painterResource(R.drawable.icon),
+//                            contentDescription = context.getString(R.string.app_name),
+//                            contentScale = ContentScale.Fit
+//                        )
+//                    }
+//
+//                    Spacer(Modifier.width(16.dp))
 
                     OutlinedTextField(
                         modifier = Modifier
-                            .width(LocalConfiguration.current.screenWidthDp.dp * 0.9f),
+                            .fillMaxWidth(),
                         textStyle = TextStyle(
                             textAlign = TextAlign.Start,
                             fontFamily = CustomFont,
@@ -370,6 +371,24 @@ fun ChatRoomScreen(navController: NavController) {
                                 fontFamily = CustomFont,
                             )
                         },
+                        leadingIcon = {
+                            IconButton(
+                                onClick = {
+                                    chatRoomViewModel.sendMessagesChatRoom(
+                                        message = message
+                                    )
+//                                    keyboardController?.hide()
+                                    message = ""
+                                }
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(32.dp),
+                                    painter = painterResource(R.drawable.round_send_24),
+                                    contentDescription = context.getString(R.string.write_hint),
+                                    tint = Color.White
+                                )
+                            }
+                        },
                         singleLine = true,
                         enabled = true,
                         visualTransformation = VisualTransformation.None,
@@ -384,7 +403,7 @@ fun ChatRoomScreen(navController: NavController) {
                                 chatRoomViewModel.sendMessagesChatRoom(
                                     message = message
                                 )
-                                keyboardController?.hide()
+//                                keyboardController?.hide()
                                 message = ""
                             }
                         )
