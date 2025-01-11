@@ -30,4 +30,6 @@ data class ReceiveMessages(
     val sendTime: Long? = null,
     @SerializedName("ownerId")
     val ownerId: Int? = null,
+    @SerializedName("avatar")
+    val avatar: String? = null,
 )

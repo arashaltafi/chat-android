@@ -93,7 +93,7 @@ fun ChatRoomScreen(navController: NavController) {
 
     // Listen for send new message
     LaunchedEffect(liveSendChatRoom) {
-        if (liveSendChatRoom?.message == "ok" && liveSendChatRoom?.data != null) {
+        if (liveSendChatRoom?.message == "ok" && liveSendChatRoom?.data?.text != null) {
             listState.animateScrollToItem(0)
             messages.add(0, liveSendChatRoom!!.data)
         }
@@ -267,8 +267,7 @@ fun ChatRoomScreen(navController: NavController) {
                                             .padding(top = 6.dp)
                                             .align(Alignment.End),
                                         text = PersianDate(
-                                            messages[item].sendTime?.toLong()
-                                                ?.fixSummerTime()
+                                            messages[item].sendTime?.fixSummerTime()
                                         ).getDateClassified(),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = Color.White,
@@ -276,7 +275,7 @@ fun ChatRoomScreen(navController: NavController) {
                                     )
                                 }
                                 AsyncImage(
-                                    model = "https://arashaltafi.ir/arash.jpg",
+                                    model = messages[item].avatar,
                                     contentDescription = "arash",
                                     modifier = Modifier
                                         .size(38.dp)
