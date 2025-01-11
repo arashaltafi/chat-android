@@ -1,8 +1,5 @@
 package com.arash.altafi.chatandroid.ui.screens
 
-import android.text.TextUtils
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +16,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -314,6 +310,7 @@ fun ChatRoomScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .imePadding()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 contentAlignment = Alignment.Center,
             ) {
@@ -323,25 +320,6 @@ fun ChatRoomScreen(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-//                    Card(
-//                        modifier = Modifier
-//                            .width(LocalConfiguration.current.screenWidthDp.dp * 0.1f),
-//                        onClick = {
-//                            Toast.makeText(context, "msg: $message", Toast.LENGTH_SHORT).show()
-//                        },
-//                        colors = CardDefaults.cardColors(
-//                            containerColor = Color.Transparent
-//                        ),
-//                    ) {
-//                        Image(
-//                            painter = painterResource(R.drawable.icon),
-//                            contentDescription = context.getString(R.string.app_name),
-//                            contentScale = ContentScale.Fit
-//                        )
-//                    }
-//
-//                    Spacer(Modifier.width(16.dp))
-
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -393,17 +371,17 @@ fun ChatRoomScreen(navController: NavController) {
                         enabled = true,
                         visualTransformation = VisualTransformation.None,
                         keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Words,
+                            capitalization = KeyboardCapitalization.Sentences,
                             keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Done,
+                            imeAction = ImeAction.Send,
                             autoCorrect = false
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = {
+                            onSend = {
                                 chatRoomViewModel.sendMessagesChatRoom(
                                     message = message
                                 )
-//                                keyboardController?.hide()
+                                keyboardController?.hide()
                                 message = ""
                             }
                         )

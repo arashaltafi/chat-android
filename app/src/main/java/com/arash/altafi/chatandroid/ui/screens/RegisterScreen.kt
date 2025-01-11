@@ -104,6 +104,7 @@ fun RegisterScreen(navController: NavController) {
         }
         Box(
             modifier = Modifier
+                .imePadding()
                 .fillMaxSize()
                 .padding(8.dp),
             contentAlignment = Alignment.Center

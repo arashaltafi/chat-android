@@ -214,7 +214,7 @@ fun LoginScreen(navController: NavController) {
                     onClick = {
                         authViewModel.sendLogin(phone = mobile)
                     },
-                    modifier = Modifier.width(280.dp),
+                    modifier = Modifier.width(280.dp).imePadding(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                 ) {
                     Text(
