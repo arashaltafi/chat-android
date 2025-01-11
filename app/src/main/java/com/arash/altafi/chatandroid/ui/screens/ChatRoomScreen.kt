@@ -172,7 +172,8 @@ fun ChatRoomScreen(navController: NavController) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1f)
+                    .padding(top = 12.dp),
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.Bottom,
                 reverseLayout = true,

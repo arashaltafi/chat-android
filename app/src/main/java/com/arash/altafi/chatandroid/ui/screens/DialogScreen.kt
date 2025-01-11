@@ -74,7 +74,7 @@ fun DialogScreen(navController: NavController) {
                         containerColor = colorResource(R.color.gray_300)
                     ),
                     onClick = {
-                        navController.navigate(Route.Chat)
+                        navController.navigate(Route.Chat(it.dialogs[user].peerId.toString()))
                     }
                 ) {
                     Row(

@@ -5,6 +5,7 @@ object Constance {
     const val ERROR = "error"
     const val SEND_MESSAGE = "sendMessage"
     const val GET_MESSAGES = "getMessages"
+    const val RECEIVE_MESSAGE = "receiveMessage"
     const val INTRODUCE = "introduce"
     const val LOGOUT = "logout"
     const val LOGIN = "login"

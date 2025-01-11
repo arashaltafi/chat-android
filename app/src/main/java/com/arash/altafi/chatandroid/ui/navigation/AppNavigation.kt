@@ -190,23 +190,23 @@ fun AppNavigation() {
     val currentDestination = currentBackStackEntry?.destination?.route
     val isSplashScreen = currentDestination == context.packageName + Route.Splash.route
     val isDialogScreen = currentDestination == context.packageName + Route.Dialog.route
-    val allowBottomBar = arrayOf<String>(
+    val allowBottomBar = arrayOf(
         packageName + Route.Dialog.route,
         packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
-    val allowTopBar = arrayOf<String>(
+    val allowTopBar = arrayOf(
         packageName + Route.Users.route,
-        packageName + Route.Chat.route,
+        packageName + Route.Chat().route,
         packageName + Route.Dialog.route,
 //        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
-    val allowNavigationBar = arrayOf<String>(
+    val allowNavigationBar = arrayOf(
         packageName + Route.Users.route,
-        packageName + Route.Chat.route,
+        packageName + Route.Chat().route,
         packageName + Route.Dialog.route,
         packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
@@ -551,8 +551,11 @@ fun AppNavigation() {
                     composable<Route.Dialog> {
                         DialogScreen(navController)
                     }
-                    composable<Route.Chat> {
-                        ChatScreen(navController)
+                    composable<Route.Chat> { backStackEntry: NavBackStackEntry ->
+                        val args = backStackEntry.toRoute<Route.Chat>()
+                        args.id?.let {
+                            ChatScreen(navController, it)
+                        }
                     }
                     composable<Route.Profile> {
                         ProfileScreen(navController)
