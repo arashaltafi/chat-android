@@ -103,7 +103,7 @@ fun DialogScreen(navController: NavController) {
                             )
                             Spacer(Modifier.width(22.dp))
                             Text(
-                                text = it.dialogs[user].name + " " + it.dialogs[user].family,
+                                text = it.dialogs[user].name ?: context.getString(R.string.app_name),
                                 fontSize = 16.sp,
                                 fontStyle = FontStyle.Normal,
                                 fontFamily = CustomFont,

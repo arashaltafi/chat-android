@@ -12,8 +12,6 @@ data class ReceiveDialogs(
     val peerId: Int? = null,
     @SerializedName("name")
     val name: String? = null,
-    @SerializedName("family")
-    val family: String? = null,
     @SerializedName("lastMessage")
     val lastMessage: String? = null,
     @SerializedName("avatar")

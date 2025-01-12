@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -53,12 +54,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,6 +69,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
+import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
@@ -131,6 +135,7 @@ fun ChatScreen(navController: NavController, id: String) {
     }
 
 
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -165,6 +170,20 @@ fun ChatScreen(navController: NavController, id: String) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
+                    IconButton(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        onClick = {
+                            navController.navigateUp()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.round_arrow_back_24),
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                    Spacer(Modifier.width(4.dp))
                     AsyncImage(
                         model = liveGetMessages?.peerInfo?.avatar,
                         contentDescription = liveGetMessages?.peerInfo?.name,
@@ -203,116 +222,147 @@ fun ChatScreen(navController: NavController, id: String) {
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "more",
                             modifier = Modifier.size(24.dp),
+                            tint = Color.White
                         )
                     }
                 }
             }
 
-            // Chat Messages
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(top = 12.dp),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.Bottom,
-                reverseLayout = true,
-                state = listState
-            ) {
-                items(messages.size) { item ->
-                    val isSendByMe = messages[item].isComing == true
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        contentAlignment = if (isSendByMe) Alignment.CenterStart else Alignment.CenterEnd
+            // empty ui
+            if (messages.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (isSendByMe) {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(0.9f)
-                            ) {
-                                Text(
-                                    modifier = Modifier
-                                        .background(
-                                            brush = Brush.linearGradient(
-                                                colors = listOf(
-                                                    colorResource(R.color.gray_200),
-                                                    colorResource(R.color.gray_300)
-                                                ),
-                                                start = Offset(0f, 0f), // Top-left
-                                                end = Offset(1000f, 1000f) // Bottom-right
-                                            ),
-                                            shape = RoundedCornerShape(
-                                                topEnd = 8.dp,
-                                                topStart = 4.dp,
-                                                bottomEnd = 8.dp,
-                                                bottomStart = 0.dp,
-                                            )
-                                        )
-                                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                                    textAlign = TextAlign.Justify,
-                                    text = messages[item].text ?: "",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Black,
-                                    fontFamily = CustomFont
-                                )
-                                Text(
-                                    modifier = Modifier.padding(top = 6.dp),
-                                    text = PersianDate(
-                                        messages[item].sendTime?.toLong()
-                                            ?.fixSummerTime()
-                                    ).getDateClassified(),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White,
-                                    fontFamily = CustomFont
-                                )
-                            }
-                        } else {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(0.9f)
-                            ) {
+                        LottieComponent(
+                            size = DpSize(width = 200.dp, height = 200.dp),
+                            loop = true,
+                            lottieFile = R.raw.empty_list3
+                        )
+
+                        Text(
+                            modifier = Modifier.padding(top = 16.dp),
+                            text = "پیامی یافت نشد ...",
+                            fontFamily = CustomFont,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Normal,
+                        )
+                    }
+                }
+            } else {
+                // Chat Messages
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(top = 12.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.Bottom,
+                    reverseLayout = true,
+                    state = listState
+                ) {
+                    items(messages.size) { item ->
+                        val isSendByMe = messages[item].isComing == true
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            contentAlignment = if (isSendByMe) Alignment.CenterStart else Alignment.CenterEnd
+                        ) {
+                            if (isSendByMe) {
                                 Column(
-                                    modifier = Modifier
-                                        .padding(end = 12.dp)
-                                        .weight(1f)
+                                    modifier = Modifier.fillMaxWidth(0.9f)
                                 ) {
                                     Text(
                                         modifier = Modifier
                                             .background(
                                                 brush = Brush.linearGradient(
                                                     colors = listOf(
-                                                        colorResource(R.color.blue_600),
-                                                        colorResource(R.color.blue_400)
+                                                        colorResource(R.color.gray_200),
+                                                        colorResource(R.color.gray_300)
                                                     ),
                                                     start = Offset(0f, 0f), // Top-left
                                                     end = Offset(1000f, 1000f) // Bottom-right
                                                 ),
                                                 shape = RoundedCornerShape(
-                                                    topEnd = 0.dp,
-                                                    topStart = 8.dp,
-                                                    bottomEnd = 4.dp,
-                                                    bottomStart = 8.dp,
+                                                    topEnd = 8.dp,
+                                                    topStart = 4.dp,
+                                                    bottomEnd = 8.dp,
+                                                    bottomStart = 0.dp,
                                                 )
                                             )
-                                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                                            .align(Alignment.End),
+                                            .padding(horizontal = 16.dp, vertical = 8.dp),
                                         textAlign = TextAlign.Justify,
                                         text = messages[item].text ?: "",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White,
+                                        color = Color.Black,
                                         fontFamily = CustomFont
                                     )
                                     Text(
-                                        modifier = Modifier
-                                            .padding(top = 6.dp)
-                                            .align(Alignment.End),
+                                        modifier = Modifier.padding(top = 6.dp),
                                         text = PersianDate(
-                                            messages[item].sendTime?.fixSummerTime()
+                                            messages[item].sendTime?.toLong()
+                                                ?.fixSummerTime()
                                         ).getDateClassified(),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = Color.White,
                                         fontFamily = CustomFont
                                     )
+                                }
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(0.9f)
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(end = 12.dp)
+                                            .weight(1f)
+                                    ) {
+                                        Text(
+                                            modifier = Modifier
+                                                .background(
+                                                    brush = Brush.linearGradient(
+                                                        colors = listOf(
+                                                            colorResource(R.color.blue_600),
+                                                            colorResource(R.color.blue_400)
+                                                        ),
+                                                        start = Offset(0f, 0f), // Top-left
+                                                        end = Offset(1000f, 1000f) // Bottom-right
+                                                    ),
+                                                    shape = RoundedCornerShape(
+                                                        topEnd = 0.dp,
+                                                        topStart = 8.dp,
+                                                        bottomEnd = 4.dp,
+                                                        bottomStart = 8.dp,
+                                                    )
+                                                )
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                                .align(Alignment.End),
+                                            textAlign = TextAlign.Justify,
+                                            text = messages[item].text ?: "",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.White,
+                                            fontFamily = CustomFont
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .padding(top = 6.dp)
+                                                .align(Alignment.End),
+                                            text = PersianDate(
+                                                messages[item].sendTime?.fixSummerTime()
+                                            ).getDateClassified(),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.White,
+                                            fontFamily = CustomFont
+                                        )
+                                    }
                                 }
                             }
                         }

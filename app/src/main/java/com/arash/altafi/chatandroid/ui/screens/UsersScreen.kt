@@ -67,7 +67,7 @@ fun UsersScreen(navController: NavController) {
                         containerColor = colorResource(R.color.gray_300)
                     ),
                     onClick = {
-                        navController.navigate(Route.Dialog)
+                        navController.navigate(Route.Chat(it[user].id))
                     }
                 ) {
                     Row(
