@@ -18,4 +18,5 @@ object Constance {
     const val USER_STATUS_CHAT_ROOM = "userStatusChatRoom"
     const val RECEIVE_MESSAGE_CHAT_ROOM = "receiveMessageChatRoom"
     const val SEND_CHAT_ROOM = "sendMessageChatRoom"
+    const val USER_INFO = "userInfo"
 }

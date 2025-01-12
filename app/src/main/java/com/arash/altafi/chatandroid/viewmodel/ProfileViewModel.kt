@@ -2,9 +2,13 @@ package com.arash.altafi.chatandroid.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.arash.altafi.chatandroid.data.model.UserInfoModel
+import com.arash.altafi.chatandroid.data.model.req.RequestGetMessages
 import com.arash.altafi.chatandroid.data.model.req.RequestSendEditProfile
 import com.arash.altafi.chatandroid.data.model.res.ReceiveEditProfile
+import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessages
+import com.arash.altafi.chatandroid.data.model.res.ReceiveUserInfo
 import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
@@ -38,8 +42,31 @@ class ProfileViewModel @Inject constructor(
     val liveLoading: LiveData<Boolean>
         get() = _liveLoading
 
+    private val _liveUserInfo = MutableStateFlow<ReceiveUserInfo?>(null)
+    val liveUserInfo: StateFlow<ReceiveUserInfo?>
+        get() = _liveUserInfo
+
     init {
         getUserInfo()
+    }
+
+    fun getUserPeerInfo(peerId: Int) {
+        val requestGetMessages = RequestGetMessages(
+            peerId = peerId,
+        )
+
+        repository.emitAndReceive(
+            Constance.USER_INFO,
+            jsonUtils.toCustomJson(requestGetMessages)
+        ) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveUserInfo>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liveUserInfo.emit(it)
+                }
+            }
+        }
     }
 
     private fun getUserInfo() = callCache(
