@@ -90,6 +90,7 @@ import com.arash.altafi.chatandroid.ui.screens.ChatScreen
 import com.arash.altafi.chatandroid.ui.screens.DialogScreen
 import com.arash.altafi.chatandroid.ui.screens.LoginScreen
 import com.arash.altafi.chatandroid.ui.screens.ProfileScreen
+import com.arash.altafi.chatandroid.ui.screens.ProfileUserScreen
 import com.arash.altafi.chatandroid.ui.screens.RegisterScreen
 import com.arash.altafi.chatandroid.ui.screens.SettingScreen
 import com.arash.altafi.chatandroid.ui.screens.SplashScreen
@@ -559,6 +560,12 @@ fun AppNavigation() {
                     }
                     composable<Route.Profile> {
                         ProfileScreen(navController)
+                    }
+                    composable<Route.ProfileUserScreen> { backStackEntry: NavBackStackEntry ->
+                        val args = backStackEntry.toRoute<Route.Chat>()
+                        args.id?.let {
+                            ProfileUserScreen(navController, it)
+                        }
                     }
                     composable<Route.Setting> {
                         SettingScreen(navController)

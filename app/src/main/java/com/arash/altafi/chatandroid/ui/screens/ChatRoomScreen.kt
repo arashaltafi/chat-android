@@ -42,6 +42,7 @@ import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ChatRoomViewModel
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessages
+import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
@@ -287,20 +288,31 @@ fun ChatRoomScreen(navController: NavController) {
                                         fontFamily = CustomFont
                                     )
                                 }
-                                AsyncImage(
-                                    model = messages[item].avatar,
-                                    contentDescription = messages[item].fullName,
-                                    modifier = Modifier
-                                        .padding(top = 6.dp)
-                                        .size(38.dp)
-                                        .clip(CircleShape)
-                                        .border(
-                                            0.5.dp,
-                                            Color.Green,
-                                            CircleShape
-                                        ),
-                                    contentScale = ContentScale.Crop,
-                                )
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.Transparent
+                                    ),
+                                    onClick = {
+                                        messages[item].ownerId?.let {
+                                            navController.navigate(Route.ProfileUserScreen(it.toString()))
+                                        }
+                                    }
+                                ) {
+                                    AsyncImage(
+                                        model = messages[item].avatar,
+                                        contentDescription = messages[item].fullName,
+                                        modifier = Modifier
+                                            .padding(top = 6.dp)
+                                            .size(38.dp)
+                                            .clip(CircleShape)
+                                            .border(
+                                                0.5.dp,
+                                                Color.Green,
+                                                CircleShape
+                                            ),
+                                        contentScale = ContentScale.Crop,
+                                    )
+                                }
                             }
                         }
                     }

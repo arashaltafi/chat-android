@@ -26,6 +26,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,6 +72,7 @@ import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
+import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
@@ -134,8 +137,6 @@ fun ChatScreen(navController: NavController, id: String) {
         }
     }
 
-
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -184,19 +185,28 @@ fun ChatScreen(navController: NavController, id: String) {
                         )
                     }
                     Spacer(Modifier.width(4.dp))
-                    AsyncImage(
-                        model = liveGetMessages?.peerInfo?.avatar,
-                        contentDescription = liveGetMessages?.peerInfo?.name,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .border(
-                                1.dp,
-                                if (liveGetMessages?.peerInfo?.lastSeen == "online") Color.Green else Color.Red,
-                                CircleShape
-                            ),
-                        contentScale = ContentScale.Crop,
-                    )
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                        ),
+                        onClick = {
+                            navController.navigate(Route.ProfileUserScreen(id))
+                        }
+                    ) {
+                        AsyncImage(
+                            model = liveGetMessages?.peerInfo?.avatar,
+                            contentDescription = liveGetMessages?.peerInfo?.name,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .border(
+                                    1.dp,
+                                    if (liveGetMessages?.peerInfo?.lastSeen == "online") Color.Green else Color.Red,
+                                    CircleShape
+                                ),
+                            contentScale = ContentScale.Crop,
+                        )
+                    }
                     Spacer(Modifier.width(12.dp))
                     Text(
                         text = liveGetMessages?.peerInfo?.name + " " + liveGetMessages?.peerInfo?.family,
