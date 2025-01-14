@@ -1,9 +1,11 @@
 package com.arash.altafi.chatandroid.ui.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,6 +82,7 @@ import com.arash.altafi.chatandroid.viewmodel.ChatViewModel
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(navController: NavController, id: String) {
     if (id == "") {
@@ -308,6 +311,26 @@ fun ChatScreen(navController: NavController, id: String) {
                                                     bottomStart = 0.dp,
                                                 )
                                             )
+                                            .combinedClickable(
+                                                onClick = {
+                                                    Toast
+                                                        .makeText(
+                                                            context,
+                                                            "onClick",
+                                                            Toast.LENGTH_SHORT
+                                                        )
+                                                        .show()
+                                                },
+                                                onDoubleClick = {
+                                                    Toast
+                                                        .makeText(
+                                                            context,
+                                                            "onDoubleClick",
+                                                            Toast.LENGTH_SHORT
+                                                        )
+                                                        .show()
+                                                }
+                                            )
                                             .padding(horizontal = 16.dp, vertical = 8.dp),
                                         textAlign = TextAlign.Justify,
                                         text = messages[item].text ?: "",
@@ -352,6 +375,26 @@ fun ChatScreen(navController: NavController, id: String) {
                                                         bottomEnd = 4.dp,
                                                         bottomStart = 8.dp,
                                                     )
+                                                )
+                                                .combinedClickable(
+                                                    onClick = {
+                                                        Toast
+                                                            .makeText(
+                                                                context,
+                                                                "onClick",
+                                                                Toast.LENGTH_SHORT
+                                                            )
+                                                            .show()
+                                                    },
+                                                    onDoubleClick = {
+                                                        Toast
+                                                            .makeText(
+                                                                context,
+                                                                "onDoubleClick",
+                                                                Toast.LENGTH_SHORT
+                                                            )
+                                                            .show()
+                                                    }
                                                 )
                                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                                 .align(Alignment.End),
