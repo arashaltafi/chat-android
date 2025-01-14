@@ -30,6 +30,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +49,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -112,6 +113,8 @@ fun ChatScreen(navController: NavController, id: String) {
     var message by remember { mutableStateOf("") }
 
     val messages = remember { mutableStateListOf<ReceiveMessagesPeer>() }
+
+    var showMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(id) {
         chatViewModel.getMessages(id.toInt())
@@ -229,7 +232,7 @@ fun ChatScreen(navController: NavController, id: String) {
                             .fillMaxHeight(),
                         onClick = {
                             Toast.makeText(context, "more", Toast.LENGTH_SHORT).show()
-                            // todo show popup menu
+                            showMenu = true
                         }
                     ) {
                         Icon(
@@ -505,6 +508,38 @@ fun ChatScreen(navController: NavController, id: String) {
                     )
                 }
             }
+
+            // Popup menu
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }, // Dismiss menu when clicked outside
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Option 1") },
+                    onClick = {
+                        showMenu = false
+                        // Handle Option 1 click
+                        println("Option 1 clicked")
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Option 2") },
+                    onClick = {
+                        showMenu = false
+                        // Handle Option 2 click
+                        println("Option 2 clicked")
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Option 3") },
+                    onClick = {
+                        showMenu = false
+                        // Handle Option 3 click
+                        println("Option 3 clicked")
+                    }
+                )
+            }
+
         }
     }
 
