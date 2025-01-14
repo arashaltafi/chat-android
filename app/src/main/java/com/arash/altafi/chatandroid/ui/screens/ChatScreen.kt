@@ -229,6 +229,7 @@ fun ChatScreen(navController: NavController, id: String) {
                             .fillMaxHeight(),
                         onClick = {
                             Toast.makeText(context, "more", Toast.LENGTH_SHORT).show()
+                            // todo show popup menu
                         }
                     ) {
                         Icon(
