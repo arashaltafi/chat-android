@@ -20,6 +20,9 @@
     <string name="yesterday">دیروز</string>
     <string name="online">آنلاین</string>
     <string name="offline">آفلاین</string>
+    <string name="emoji">استیکر</string>
+    <string name="attachment">پیوست</string>
+    <string name="send">ارسال</string>
     <string name="typing">در حال تایپ …</string>
     <string name="write_hint">بنویسید …</string>
 </resources>

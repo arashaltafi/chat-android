@@ -27,6 +27,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Attachment
+import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,7 +38,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -66,6 +72,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,7 +92,7 @@ import saman.zamani.persiandate.PersianDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ChatScreen(navController: NavController, id: String) {
+fun ChatScreen(navController: NavController? = null, id: String) {
     if (id == "") {
         Box(
             modifier = Modifier
@@ -181,7 +188,7 @@ fun ChatScreen(navController: NavController, id: String) {
                         modifier = Modifier
                             .fillMaxHeight(),
                         onClick = {
-                            navController.navigateUp()
+                            navController?.navigateUp()
                         }
                     ) {
                         Icon(
@@ -196,7 +203,7 @@ fun ChatScreen(navController: NavController, id: String) {
                             containerColor = Color.Transparent
                         ),
                         onClick = {
-                            navController.navigate(Route.ProfileUserScreen(id))
+                            navController?.navigate(Route.ProfileUserScreen(id))
                         }
                     ) {
                         AsyncImage(
@@ -214,12 +221,32 @@ fun ChatScreen(navController: NavController, id: String) {
                         )
                     }
                     Spacer(Modifier.width(12.dp))
-                    Text(
-                        text = liveGetMessages?.peerInfo?.name + " " + liveGetMessages?.peerInfo?.family,
-                        color = Color.White,
-                        fontFamily = CustomFont,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            text = liveGetMessages?.peerInfo?.name + " " + liveGetMessages?.peerInfo?.family,
+                            color = Color.White,
+                            fontFamily = CustomFont,
+                            textAlign = TextAlign.End,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        val lastSeen = liveGetMessages?.peerInfo?.lastSeen ?: "نامشخص"
+                        Text(
+                            modifier = Modifier.padding(top = 2.dp),
+                            text = if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
+                                PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                            },
+                            color = Color.White,
+                            fontFamily = CustomFont,
+                            textAlign = TextAlign.End,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
                 Row(
                     modifier = Modifier
@@ -231,7 +258,6 @@ fun ChatScreen(navController: NavController, id: String) {
                         modifier = Modifier
                             .fillMaxHeight(),
                         onClick = {
-                            Toast.makeText(context, "more", Toast.LENGTH_SHORT).show()
                             showMenu = true
                         }
                     ) {
@@ -240,6 +266,38 @@ fun ChatScreen(navController: NavController, id: String) {
                             contentDescription = "more",
                             modifier = Modifier.size(24.dp),
                             tint = Color.White
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "مسدود کردن",
+                                    color = Color.White,
+                                    fontFamily = CustomFont,
+                                    fontSize = 14.sp
+                                )
+                            },
+                            onClick = {
+                                showMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "بی صدا کردن",
+                                    color = Color.White,
+                                    fontFamily = CustomFont,
+                                    fontSize = 14.sp
+                                )
+                            },
+                            onClick = {
+                                showMenu = false
+                            }
                         )
                     }
                 }
@@ -267,7 +325,7 @@ fun ChatScreen(navController: NavController, id: String) {
                             modifier = Modifier.padding(top = 16.dp),
                             text = "پیامی یافت نشد ...",
                             fontFamily = CustomFont,
-                            fontSize = 18.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Normal,
                         )
@@ -279,7 +337,7 @@ fun ChatScreen(navController: NavController, id: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(top = 12.dp),
+                        .padding(top = 12.dp, bottom = 16.dp),
                     contentPadding = PaddingValues(vertical = 8.dp),
                     verticalArrangement = Arrangement.Bottom,
                     reverseLayout = true,
@@ -432,7 +490,18 @@ fun ChatScreen(navController: NavController, id: String) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .imePadding()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                colorResource(R.color.gray_700),
+                                colorResource(R.color.gray_900)
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(1000f, 1000f)
+                        ),
+                        shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                    )
+                    .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Row(
@@ -444,6 +513,10 @@ fun ChatScreen(navController: NavController, id: String) {
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        ),
                         textStyle = TextStyle(
                             textAlign = TextAlign.Start,
                             fontFamily = CustomFont,
@@ -451,14 +524,6 @@ fun ChatScreen(navController: NavController, id: String) {
                         value = message,
                         onValueChange = { newValue ->
                             message = newValue
-                        },
-                        label = {
-                            Text(
-                                text = context.getString(R.string.write_hint),
-                                fontSize = 12.sp,
-                                fontFamily = CustomFont,
-                                color = Color.White
-                            )
                         },
                         placeholder = {
                             Text(
@@ -473,6 +538,14 @@ fun ChatScreen(navController: NavController, id: String) {
                         leadingIcon = {
                             IconButton(
                                 onClick = {
+                                    if (message.trim() == "" || message.trim().isEmpty()) {
+                                        Toast.makeText(
+                                            context,
+                                            "لطفا ابتدا متن پیام را وارد نمایید",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@IconButton
+                                    }
                                     chatViewModel.sendMessages(
                                         message = message
                                     )
@@ -480,11 +553,39 @@ fun ChatScreen(navController: NavController, id: String) {
                                 }
                             ) {
                                 Icon(
-                                    modifier = Modifier.size(32.dp),
+                                    modifier = Modifier.size(28.dp),
                                     painter = painterResource(R.drawable.round_send_24),
-                                    contentDescription = context.getString(R.string.write_hint),
+                                    contentDescription = context.getString(R.string.send),
                                     tint = Color.White
                                 )
+                            }
+                        },
+                        trailingIcon = {
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        //todo fixme open gallery
+                                    }
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(28.dp),
+                                        imageVector = Icons.Default.Attachment,
+                                        contentDescription = context.getString(R.string.attachment),
+                                        tint = Color.White
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        //todo fixme open emoji box
+                                    }
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(28.dp),
+                                        imageVector = Icons.Default.EmojiEmotions,
+                                        contentDescription = context.getString(R.string.emoji),
+                                        tint = Color.White
+                                    )
+                                }
                             }
                         },
                         singleLine = true,
@@ -498,6 +599,14 @@ fun ChatScreen(navController: NavController, id: String) {
                         ),
                         keyboardActions = KeyboardActions(
                             onSend = {
+                                if (message.trim() == "" || message.trim().isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        "لطفا ابتدا متن پیام را وارد نمایید",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@KeyboardActions
+                                }
                                 chatViewModel.sendMessages(
                                     message = message
                                 )
@@ -507,37 +616,6 @@ fun ChatScreen(navController: NavController, id: String) {
                         )
                     )
                 }
-            }
-
-            // Popup menu
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }, // Dismiss menu when clicked outside
-            ) {
-                DropdownMenuItem(
-                    text = { Text("Option 1") },
-                    onClick = {
-                        showMenu = false
-                        // Handle Option 1 click
-                        println("Option 1 clicked")
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Option 2") },
-                    onClick = {
-                        showMenu = false
-                        // Handle Option 2 click
-                        println("Option 2 clicked")
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Option 3") },
-                    onClick = {
-                        showMenu = false
-                        // Handle Option 3 click
-                        println("Option 3 clicked")
-                    }
-                )
             }
 
         }

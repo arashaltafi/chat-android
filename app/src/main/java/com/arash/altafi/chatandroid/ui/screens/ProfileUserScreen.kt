@@ -68,7 +68,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 10.dp)
+            .padding(top = 0.dp, bottom = 10.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -174,6 +174,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
 
         Card(
             modifier = Modifier
+                .padding(horizontal = 16.dp)
                 .padding(start = 32.dp)
                 .offset(y = (-32).dp)
                 .size(64.dp)
@@ -203,6 +204,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .padding(top = 8.dp, start = 8.dp, end = 8.dp),
             textAlign = TextAlign.Start,
             text = context.getString(R.string.phone) + ":",
@@ -214,6 +216,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .padding(top = 12.dp, start = 8.dp, end = 8.dp),
             textAlign = TextAlign.Start,
             text = liveUserInfo?.peerInfo?.phone ?: "",
@@ -225,6 +228,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .padding(top = 48.dp, start = 8.dp, end = 8.dp),
             textAlign = TextAlign.Start,
             text = context.getString(R.string.bio) + ":",
@@ -236,6 +240,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .padding(top = 12.dp, start = 8.dp, end = 8.dp),
             fontStyle = FontStyle.Normal,
             textAlign = TextAlign.Justify,

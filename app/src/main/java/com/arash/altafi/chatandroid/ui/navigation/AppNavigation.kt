@@ -193,13 +193,12 @@ fun AppNavigation() {
     val isDialogScreen = currentDestination == context.packageName + Route.Dialog.route
     val allowBottomBar = arrayOf(
         packageName + Route.Dialog.route,
-        packageName + Route.ChatRoom.route,
+//        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
     val allowTopBar = arrayOf(
         packageName + Route.Users.route,
-        packageName + Route.Chat().route,
         packageName + Route.Dialog.route,
 //        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
@@ -207,9 +206,8 @@ fun AppNavigation() {
     )
     val allowNavigationBar = arrayOf(
         packageName + Route.Users.route,
-        packageName + Route.Chat().route,
         packageName + Route.Dialog.route,
-        packageName + Route.ChatRoom.route,
+//        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
@@ -495,7 +493,7 @@ fun AppNavigation() {
                                             }
                                         },
                                         onClick = {
-                                            navigationSelectedItem = index
+                                            if (index != 1) navigationSelectedItem = index
                                             navController.navigate(navigationItem.route)
                                         },
                                         colors = NavigationBarItemDefaults.colors(
