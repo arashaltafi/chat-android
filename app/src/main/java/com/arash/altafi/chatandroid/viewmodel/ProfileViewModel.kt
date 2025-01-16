@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arash.altafi.chatandroid.data.model.UserInfoModel
+import com.arash.altafi.chatandroid.data.model.req.RequestBlock
 import com.arash.altafi.chatandroid.data.model.req.RequestGetMessages
 import com.arash.altafi.chatandroid.data.model.req.RequestSendEditProfile
 import com.arash.altafi.chatandroid.data.model.res.ReceiveEditProfile
-import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessages
 import com.arash.altafi.chatandroid.data.model.res.ReceiveUserInfo
 import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
@@ -34,6 +34,14 @@ class ProfileViewModel @Inject constructor(
     val liveProfile: LiveData<UserInfoModel>
         get() = _liveProfile
 
+    private val _liveBlock = MutableStateFlow<Boolean?>(null)
+    val liveBlock: StateFlow<Boolean?>
+        get() = _liveBlock
+
+    private val _liveBlockPeer = MutableStateFlow<Boolean?>(null)
+    val liveBlockPeer: StateFlow<Boolean?>
+        get() = _liveBlockPeer
+
     private val _liveError = MutableLiveData<Boolean>()
     val liveError: LiveData<Boolean>
         get() = _liveError
@@ -48,6 +56,7 @@ class ProfileViewModel @Inject constructor(
 
     init {
         getUserInfo()
+        receiveBlock()
     }
 
     fun getUserPeerInfo(peerId: Int) {
@@ -113,6 +122,66 @@ class ProfileViewModel @Inject constructor(
                     delay(100L)
                     getUserInfo()
                 }
+            }
+        }
+    }
+
+    fun sendBlock(peerId: Int) {
+        val requestBlock = RequestBlock(
+            peerId = peerId,
+        )
+
+        repository.emitAndReceive(
+            Constance.BLOCK,
+            jsonUtils.toCustomJson(requestBlock)
+        ) { eventData ->
+            val receiveUsers =
+                jsonUtils.getSafeObject<RequestBlock>(eventData.toString())
+            receiveUsers.onSuccess {
+                _liveBlock.value = !(it.peerId == 0 ||
+                        it.peerId.toString() == "" ||
+                        it.peerId.toString().isEmpty())
+            }
+        }
+    }
+
+    fun sendUnBlock(peerId: Int) {
+        val requestBlock = RequestBlock(
+            peerId = peerId,
+        )
+
+        repository.emitAndReceive(
+            Constance.UNBLOCK,
+            jsonUtils.toCustomJson(requestBlock)
+        ) { eventData ->
+            val receiveUsers =
+                jsonUtils.getSafeObject<RequestBlock>(eventData.toString())
+            receiveUsers.onSuccess {
+                _liveBlock.value = it.peerId == 0 ||
+                        it.peerId.toString() == "" ||
+                        it.peerId.toString().isEmpty()
+            }
+        }
+    }
+
+    private fun receiveBlock() {
+        repository.onReceivedData(Constance.BLOCK_PEER) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<RequestBlock>(eventData.toString())
+            receiveError.onSuccess {
+                _liveBlockPeer.value = !(it.peerId == 0 ||
+                        it.peerId.toString() == "" ||
+                        it.peerId.toString().isEmpty())
+            }
+        }
+
+        repository.onReceivedData(Constance.UNBLOCK_PEER) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<RequestBlock>(eventData.toString())
+            receiveError.onSuccess {
+                _liveBlockPeer.value = it.peerId == 0 ||
+                        it.peerId.toString() == "" ||
+                        it.peerId.toString().isEmpty()
             }
         }
     }

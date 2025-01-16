@@ -28,8 +28,8 @@ object Constance {
     const val RECEIVE_MESSAGE_CHAT_ROOM = "receiveMessageChatRoom"
     const val SEND_CHAT_ROOM = "sendMessageChatRoom"
 
-    const val BLOCK_BY_ME = "blockByMe"
-    const val UNBLOCK_BY_ME = "unBlockByMe"
+    const val BLOCK_PEER = "blockPeer"
+    const val UNBLOCK_PEER = "unBlockPeer"
     const val BLOCK = "block"
     const val UNBLOCK = "unBlock"
 

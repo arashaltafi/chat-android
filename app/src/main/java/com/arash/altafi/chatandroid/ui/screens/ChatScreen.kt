@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,17 +33,12 @@ import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,6 +78,8 @@ import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
+import com.arash.altafi.chatandroid.ui.components.PopupMenu
+import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -116,6 +114,21 @@ fun ChatScreen(navController: NavController? = null, id: String) {
     val liveGetMessages by chatViewModel.liveGetMessages.collectAsState()
     val liveReceiveMessage by chatViewModel.liveReceiveMessage.collectAsState()
     val liveSendMessage by chatViewModel.liveSendMessage.collectAsState()
+
+    val liveBlockPeer by profileViewModel.liveBlockPeer.collectAsState()
+    val liveBlock by profileViewModel.liveBlock.collectAsState()
+
+    var isBlockPeer by remember { mutableStateOf(liveGetMessages?.peerInfo?.isBlock == true) }
+    var isBlock by remember { mutableStateOf(liveGetMessages?.peerInfo?.isBlockByMe == true) }
+
+    LaunchedEffect(arrayOf(liveBlockPeer, liveBlock)) {
+        liveBlockPeer?.let {
+            isBlockPeer = liveBlockPeer == true
+        }
+        liveBlock?.let {
+            isBlock = liveBlock == true
+        }
+    }
 
     var message by remember { mutableStateOf("") }
 
@@ -235,8 +248,12 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         val lastSeen = liveGetMessages?.peerInfo?.lastSeen ?: "نامشخص"
                         Text(
                             modifier = Modifier.padding(top = 2.dp),
-                            text = if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
-                                PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                            text = if (isBlockPeer == true) {
+                                "توسط کاربر مسدود شده اید"
+                            } else {
+                                if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
+                                    PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                                }
                             },
                             color = Color.White,
                             fontFamily = CustomFont,
@@ -269,37 +286,20 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         )
                     }
 
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false },
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = "مسدود کردن",
-                                    color = Color.White,
-                                    fontFamily = CustomFont,
-                                    fontSize = 14.sp
-                                )
-                            },
-                            onClick = {
+                    PopupMenu(
+                        showMenu = showMenu,
+                        onHideMenu = { showMenu = false },
+                        menuItems = listOf(
+                            PopupMenuItem(label = if (isBlock == true) "رفع مسدودی" else "مسدود کردن") {
+                                profileViewModel.sendBlock(peerId = id.toInt())
                                 showMenu = false
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = "بی صدا کردن",
-                                    color = Color.White,
-                                    fontFamily = CustomFont,
-                                    fontSize = 14.sp
-                                )
                             },
-                            onClick = {
+                            PopupMenuItem(label = "بی صدا کردن") {
+                                Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
                                 showMenu = false
-                            }
+                            },
                         )
-                    }
+                    )
                 }
             }
 
@@ -493,8 +493,12 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(
-                                colorResource(R.color.gray_700),
-                                colorResource(R.color.gray_900)
+                                colorResource(
+                                    if (isBlock == true) R.color.red_700 else R.color.gray_700
+                                ),
+                                colorResource(
+                                    if (isBlock == true) R.color.red_900 else R.color.gray_900
+                                )
                             ),
                             start = Offset(0f, 0f),
                             end = Offset(1000f, 1000f)
@@ -504,12 +508,22 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                     .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
+                if (isBlock == true) {
+                    Text(
+                        modifier = Modifier
+                            .height(60.dp)
+                            .fillMaxWidth()
+                            .clickable(
+                                onClick = {
+                                    profileViewModel.sendUnBlock(peerId = id.toInt())
+                                }
+                            ),
+                        text = "رفع مسدودی",
+                        color = Color.White,
+                        fontFamily = CustomFont,
+                        fontSize = 16.sp,
+                    )
+                } else {
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -617,8 +631,6 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                     )
                 }
             }
-
         }
     }
-
 }
