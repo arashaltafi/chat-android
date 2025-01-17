@@ -1,5 +1,6 @@
 package com.arash.altafi.chatandroid.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -118,8 +119,15 @@ fun ChatScreen(navController: NavController? = null, id: String) {
     val liveBlockPeer by profileViewModel.liveBlockPeer.collectAsState()
     val liveBlock by profileViewModel.liveBlock.collectAsState()
 
-    var isBlockPeer by remember { mutableStateOf(liveGetMessages?.peerInfo?.isBlock == true) }
-    var isBlock by remember { mutableStateOf(liveGetMessages?.peerInfo?.isBlockByMe == true) }
+    var isBlockPeer by remember { mutableStateOf(false) }
+    var isBlock by remember { mutableStateOf(false) }
+
+    LaunchedEffect(liveGetMessages) {
+        liveGetMessages?.let {
+            isBlock = liveGetMessages?.peerInfo?.isBlockByMe == true
+            isBlockPeer = liveGetMessages?.peerInfo?.isBlock == true
+        }
+    }
 
     LaunchedEffect(arrayOf(liveBlockPeer, liveBlock)) {
         liveBlockPeer?.let {
@@ -252,7 +260,9 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                 "توسط کاربر مسدود شده اید"
                             } else {
                                 if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
-                                    PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                                    PersianDate(
+                                        lastSeen.toLong().fixSummerTime()
+                                    ).getDateClassified()
                                 }
                             },
                             color = Color.White,
@@ -291,7 +301,11 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         onHideMenu = { showMenu = false },
                         menuItems = listOf(
                             PopupMenuItem(label = if (isBlock == true) "رفع مسدودی" else "مسدود کردن") {
-                                profileViewModel.sendBlock(peerId = id.toInt())
+                                if (isBlock == true) {
+                                    profileViewModel.sendUnBlock(peerId = id.toInt())
+                                } else {
+                                    profileViewModel.sendBlock(peerId = id.toInt())
+                                }
                                 showMenu = false
                             },
                             PopupMenuItem(label = "بی صدا کردن") {
@@ -511,13 +525,14 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                 if (isBlock == true) {
                     Text(
                         modifier = Modifier
-                            .height(60.dp)
                             .fillMaxWidth()
                             .clickable(
                                 onClick = {
                                     profileViewModel.sendUnBlock(peerId = id.toInt())
                                 }
-                            ),
+                            )
+                            .padding(vertical = 16.dp),
+                        textAlign = TextAlign.Center,
                         text = "رفع مسدودی",
                         color = Color.White,
                         fontFamily = CustomFont,
