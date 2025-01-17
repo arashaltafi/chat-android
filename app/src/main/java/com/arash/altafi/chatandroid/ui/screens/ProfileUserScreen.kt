@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
@@ -97,30 +98,53 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                 contentScale = ContentScale.FillBounds
             )
 
-            IconButton(
+            Row(
                 modifier = Modifier
-                    .padding(32.dp)
-                    .size(24.dp)
-                    .alpha(0.8f)
-                    .background(colorResource(R.color.gray_500), CircleShape)
-                    .border(1.dp, Color.White, CircleShape),
-                onClick = {
-                    navController.navigateUp()
-                }
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .padding(horizontal = 12.dp)
+                    .zIndex(999f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.round_arrow_back_24),
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
+                IconButton(
+                    modifier = Modifier
+                        .alpha(0.8f)
+                        .background(colorResource(R.color.gray_500), CircleShape)
+                        .border(1.dp, Color.White, CircleShape),
+                    onClick = {
+                        navController.navigateUp()
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.round_arrow_back_24),
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+
+                IconButton(
+                    modifier = Modifier
+                        .alpha(0.8f)
+                        .background(colorResource(R.color.gray_500), CircleShape)
+                        .border(1.dp, Color.White, CircleShape),
+                    onClick = {
+                        // show popup
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "more",
+                        tint = Color.White
+                    )
+                }
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
-                    .offset(y = -(32).dp),
+                    .offset(y = -(24).dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
