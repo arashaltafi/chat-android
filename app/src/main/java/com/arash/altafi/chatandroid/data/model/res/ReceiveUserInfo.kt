@@ -22,4 +22,8 @@ data class UserPeerInfo(
     val lastSeen: String? = null,
     @SerializedName("bio")
     val bio: String? = null,
+    @SerializedName("isBlock")
+    val isBlock: Boolean? = null,
+    @SerializedName("isBlockByMe")
+    val isBlockByMe: Boolean? = null,
 )

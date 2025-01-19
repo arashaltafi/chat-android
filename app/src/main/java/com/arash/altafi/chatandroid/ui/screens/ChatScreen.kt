@@ -1,6 +1,5 @@
 package com.arash.altafi.chatandroid.ui.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -256,7 +255,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         val lastSeen = liveGetMessages?.peerInfo?.lastSeen ?: "نامشخص"
                         Text(
                             modifier = Modifier.padding(top = 2.dp),
-                            text = if (isBlockPeer == true) {
+                            text = if (isBlockPeer) {
                                 "توسط کاربر مسدود شده اید"
                             } else {
                                 if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
@@ -300,8 +299,8 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         showMenu = showMenu,
                         onHideMenu = { showMenu = false },
                         menuItems = listOf(
-                            PopupMenuItem(label = if (isBlock == true) "رفع مسدودی" else "مسدود کردن") {
-                                if (isBlock == true) {
+                            PopupMenuItem(label = if (isBlock) "رفع مسدودی" else "مسدود کردن") {
+                                if (isBlock) {
                                     profileViewModel.sendUnBlock(peerId = id.toInt())
                                 } else {
                                     profileViewModel.sendBlock(peerId = id.toInt())
@@ -508,10 +507,10 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         brush = Brush.linearGradient(
                             colors = listOf(
                                 colorResource(
-                                    if (isBlock == true) R.color.red_700 else R.color.gray_700
+                                    if (isBlock) R.color.red_700 else R.color.gray_700
                                 ),
                                 colorResource(
-                                    if (isBlock == true) R.color.red_900 else R.color.gray_900
+                                    if (isBlock) R.color.red_900 else R.color.gray_900
                                 )
                             ),
                             start = Offset(0f, 0f),
@@ -522,7 +521,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                     .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                if (isBlock == true) {
+                if (isBlock) {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()

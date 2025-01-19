@@ -3,10 +3,8 @@ package com.arash.altafi.chatandroid.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
@@ -21,12 +19,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,6 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.PopupMenu
+import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -62,8 +60,32 @@ fun ProfileUserScreen(navController: NavController, id: String) {
     val profileViewModel: ProfileViewModel = hiltViewModel()
     val liveUserInfo by profileViewModel.liveUserInfo.collectAsState()
 
+    val liveBlockPeer by profileViewModel.liveBlockPeer.collectAsState()
+    val liveBlock by profileViewModel.liveBlock.collectAsState()
+
+    var showMenu by remember { mutableStateOf(false) }
+
+    var isBlockPeer by remember { mutableStateOf(false) }
+    var isBlock by remember { mutableStateOf(false) }
+
     LaunchedEffect(id) {
         profileViewModel.getUserPeerInfo(id.toInt())
+    }
+
+    LaunchedEffect(liveUserInfo) {
+        liveUserInfo?.let {
+            isBlock = liveUserInfo?.peerInfo?.isBlockByMe == true
+            isBlockPeer = liveUserInfo?.peerInfo?.isBlock == true
+        }
+    }
+
+    LaunchedEffect(arrayOf(liveBlockPeer, liveBlock)) {
+        liveBlockPeer?.let {
+            isBlockPeer = liveBlockPeer == true
+        }
+        liveBlock?.let {
+            isBlock = liveBlock == true
+        }
     }
 
     Column(
@@ -129,13 +151,32 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                         .background(colorResource(R.color.gray_500), CircleShape)
                         .border(1.dp, Color.White, CircleShape),
                     onClick = {
-                        // show popup
+                        showMenu = true
                     }
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = "more",
                         tint = Color.White
+                    )
+
+                    PopupMenu(
+                        showMenu = showMenu,
+                        onHideMenu = { showMenu = false },
+                        menuItems = listOf(
+                            PopupMenuItem(label = if (isBlock) "رفع مسدودی" else "مسدود کردن") {
+                                if (isBlock) {
+                                    profileViewModel.sendUnBlock(peerId = id.toInt())
+                                } else {
+                                    profileViewModel.sendBlock(peerId = id.toInt())
+                                }
+                                showMenu = false
+                            },
+                            PopupMenuItem(label = "بی صدا کردن") {
+                                Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
+                                showMenu = false
+                            },
+                        )
                     )
                 }
             }
@@ -168,8 +209,14 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                     val lastSeen = liveUserInfo?.peerInfo?.lastSeen ?: "نامشخص"
                     Text(
                         modifier = Modifier.padding(top = 16.dp),
-                        text = if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
-                            PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                        text = if (isBlockPeer) {
+                            "توسط کاربر مسدود شده اید"
+                        } else {
+                            if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
+                                PersianDate(
+                                    lastSeen.toLong().fixSummerTime()
+                                ).getDateClassified()
+                            }
                         },
                         fontFamily = CustomFont,
                         maxLines = 1,
