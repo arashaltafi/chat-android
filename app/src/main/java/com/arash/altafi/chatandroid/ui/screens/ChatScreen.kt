@@ -85,6 +85,7 @@ import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.ChatViewModel
+import com.arash.altafi.chatandroid.viewmodel.DialogViewModel
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
 
@@ -106,6 +107,10 @@ fun ChatScreen(navController: NavController? = null, id: String) {
     val context = LocalContext.current
     val chatViewModel: ChatViewModel = hiltViewModel()
     val profileViewModel: ProfileViewModel = hiltViewModel()
+    val dialogViewModel: DialogViewModel = hiltViewModel()
+
+    val liveClearHistory by dialogViewModel.liveClearHistory.collectAsState()
+    val liveDeleteDialog by dialogViewModel.liveDeleteDialog.collectAsState()
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -141,6 +146,20 @@ fun ChatScreen(navController: NavController? = null, id: String) {
 
     val messages = remember { mutableStateListOf<ReceiveMessagesPeer>() }
 
+    // handle Clear History
+    LaunchedEffect(liveClearHistory) {
+        if (liveClearHistory?.peerId == id.toInt()) {
+            messages.clear()
+        }
+    }
+
+    // handle Delete Dialog
+    LaunchedEffect(liveDeleteDialog) {
+        if (liveDeleteDialog?.peerId == id.toInt()) {
+            navController?.navigateUp()
+        }
+    }
+
     var showMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(id) {
@@ -149,7 +168,13 @@ fun ChatScreen(navController: NavController? = null, id: String) {
 
     // Initialize messages list from liveGetChatRoom
     LaunchedEffect(arrayOf(liveGetMessages, liveProfile)) {
-        if (liveGetMessages?.messages != null && liveProfile?.id != null && messages.isEmpty()) {
+        if (
+            liveGetMessages?.messages != null &&
+            (liveGetMessages?.messages?.size ?: 0) > 0 &&
+            liveProfile?.id != null &&
+            messages.isEmpty() &&
+            liveClearHistory?.peerId == null
+        ) {
             messages.clear()
             messages.addAll(liveGetMessages!!.messages)
         }
@@ -234,7 +259,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                 .clip(CircleShape)
                                 .border(
                                     1.dp,
-                                    if (liveGetMessages?.peerInfo?.lastSeen == "online") Color.Green else Color.Red,
+                                    if (liveGetMessages?.peerInfo?.lastSeen == "آنلاین") Color.Green else Color.Red,
                                     CircleShape
                                 ),
                             contentScale = ContentScale.Crop,
@@ -312,11 +337,11 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                 showMenu = false
                             },
                             PopupMenuItem(label = "حذف تاریخچه") {
-                                Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
+                                dialogViewModel.sendClearHistory(id.toInt(), false)
                                 showMenu = false
                             },
                             PopupMenuItem(label = "حذف گفتگو") {
-                                Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
+                                dialogViewModel.sendDeleteDialog(id.toInt(), false)
                                 showMenu = false
                             },
                         )

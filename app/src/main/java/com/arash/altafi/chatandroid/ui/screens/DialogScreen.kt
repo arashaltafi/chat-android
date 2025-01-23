@@ -60,137 +60,7 @@ fun DialogScreen(navController: NavController) {
         }
     }
 
-    liveGetDialogs?.let {
-        LazyColumn(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxSize()
-        ) {
-            items(it.dialogs.size) { user ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp, 8.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .shadow(4.dp)
-                        .border(1.dp, colorResource(R.color.gray_800), RoundedCornerShape(8.dp)),
-                    colors = CardDefaults.cardColors(
-                        containerColor = colorResource(R.color.gray_300)
-                    ),
-                    onClick = {
-                        navController.navigate(Route.Chat(it.dialogs[user].peerId.toString()))
-                    }
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp, 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .weight(1f),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box (
-                                modifier = Modifier
-                                    .size(50.dp)
-                            ) {
-                                AsyncImage(
-                                    model = it.dialogs[user].avatar,
-                                    contentDescription = it.dialogs[user].name,
-                                    modifier = Modifier
-                                        .size(50.dp)
-                                        .clip(CircleShape)
-                                        .shadow(8.dp),
-                                    contentScale = ContentScale.Crop,
-                                )
-                                if (it.dialogs[user].time == "آنلاین") {
-                                    Box(
-                                        modifier = Modifier
-                                            .zIndex(2f)
-                                            .align(Alignment.BottomStart)
-                                            .offset(8.dp, 2.dp)
-                                            .background(Color.Green, CircleShape)
-                                            .size(8.dp)
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.width(22.dp))
-                            Column {
-                                Text(
-                                    text = it.dialogs[user].name
-                                        ?: context.getString(R.string.app_name),
-                                    fontSize = 14.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = CustomFont,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.Black
-                                )
-                                Text(
-                                    text = it.dialogs[user].lastMessage ?: "",
-                                    fontSize = 12.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = CustomFont,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.Black
-                                )
-                            }
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        val lastSeen = it.dialogs[user].time ?: "نامشخص"
-                        val textLastSeen =
-                            if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
-                                PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
-                            }
-                        val textTyping = it.dialogs[user].isTyping ?: ""
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            if ((it.dialogs[user].unreadCount ?: 0) > 0) {
-                                val unreadCount = if (it.dialogs[user].unreadCount!! > 99) {
-                                    "99+"
-                                } else it.dialogs[user].unreadCount?.toString()
-                                Text(
-                                    modifier = Modifier
-                                        .size(22.dp)
-                                        .background(
-                                            color = colorResource(R.color.green_700),
-                                            shape = CircleShape
-                                        ),
-                                    textAlign = TextAlign.Center,
-                                    text = unreadCount ?: "",
-                                    fontSize = 12.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = CustomFont,
-                                    color = Color.White
-                                )
-                            }
-                            if (textTyping == "") {
-                                Text(
-                                    text = textLastSeen,
-                                    fontSize = 12.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = CustomFont,
-                                    color = Color.Black
-                                )
-                            } else {
-                                LottieComponent(
-                                    size = DpSize(width = 24.dp, height = 24.dp),
-                                    loop = true,
-                                    lottieFile = R.raw.typing
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } ?: run {
+    if (liveGetDialogs == null || liveGetDialogs?.dialogs?.isEmpty() == true) {
         Box(
             modifier = Modifier
                 .fillMaxSize(),
@@ -214,6 +84,138 @@ fun DialogScreen(navController: NavController) {
                     loop = true,
                     lottieFile = R.raw.empty_list
                 )
+            }
+        }
+    } else {
+        liveGetDialogs?.let {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxSize()
+            ) {
+                items(it.dialogs.size) { user ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp, 8.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .shadow(4.dp)
+                            .border(1.dp, colorResource(R.color.gray_800), RoundedCornerShape(8.dp)),
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(R.color.gray_300)
+                        ),
+                        onClick = {
+                            navController.navigate(Route.Chat(it.dialogs[user].peerId.toString()))
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp, 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box (
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                ) {
+                                    AsyncImage(
+                                        model = it.dialogs[user].avatar,
+                                        contentDescription = it.dialogs[user].name,
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .clip(CircleShape)
+                                            .shadow(8.dp),
+                                        contentScale = ContentScale.Crop,
+                                    )
+                                    if (it.dialogs[user].isOnline == true) {
+                                        Box(
+                                            modifier = Modifier
+                                                .zIndex(2f)
+                                                .align(Alignment.BottomStart)
+                                                .offset(8.dp, 2.dp)
+                                                .background(Color.Green, CircleShape)
+                                                .size(8.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(Modifier.width(22.dp))
+                                Column {
+                                    Text(
+                                        text = it.dialogs[user].name
+                                            ?: context.getString(R.string.app_name),
+                                        fontSize = 14.sp,
+                                        fontStyle = FontStyle.Normal,
+                                        fontFamily = CustomFont,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        color = Color.Black
+                                    )
+                                    Text(
+                                        text = it.dialogs[user].lastMessage ?: "",
+                                        fontSize = 12.sp,
+                                        fontStyle = FontStyle.Normal,
+                                        fontFamily = CustomFont,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        color = Color.Black
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.width(16.dp))
+                            val lastSeen = it.dialogs[user].time ?: "نامشخص"
+                            val textLastSeen =
+                                if (lastSeen == "نامشخص") lastSeen else {
+                                    PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                                }
+                            val textTyping = it.dialogs[user].isTyping ?: ""
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                if ((it.dialogs[user].unreadCount ?: 0) > 0) {
+                                    val unreadCount = if (it.dialogs[user].unreadCount!! > 99) {
+                                        "99+"
+                                    } else it.dialogs[user].unreadCount?.toString()
+                                    Text(
+                                        modifier = Modifier
+                                            .size(22.dp)
+                                            .background(
+                                                color = colorResource(R.color.green_700),
+                                                shape = CircleShape
+                                            ),
+                                        textAlign = TextAlign.Center,
+                                        text = unreadCount ?: "",
+                                        fontSize = 12.sp,
+                                        fontStyle = FontStyle.Normal,
+                                        fontFamily = CustomFont,
+                                        color = Color.White
+                                    )
+                                }
+                                if (textTyping == "") {
+                                    Text(
+                                        text = textLastSeen,
+                                        fontSize = 12.sp,
+                                        fontStyle = FontStyle.Normal,
+                                        fontFamily = CustomFont,
+                                        color = Color.Black
+                                    )
+                                } else {
+                                    LottieComponent(
+                                        size = DpSize(width = 24.dp, height = 24.dp),
+                                        loop = true,
+                                        lottieFile = R.raw.typing
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

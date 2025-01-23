@@ -1,6 +1,11 @@
 package com.arash.altafi.chatandroid.viewmodel
 
+import androidx.lifecycle.viewModelScope
+import com.arash.altafi.chatandroid.data.model.req.RequestBlock
+import com.arash.altafi.chatandroid.data.model.req.RequestDeleteDialog
+import com.arash.altafi.chatandroid.data.model.res.ReceiveDeleteDialog
 import com.arash.altafi.chatandroid.data.model.res.ReceiveDialog
+import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
@@ -8,6 +13,7 @@ import com.arash.altafi.chatandroid.utils.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +26,19 @@ class DialogViewModel @Inject constructor(
     val liveGetDialogs: StateFlow<ReceiveDialog?>
         get() = _liveGetDialogs
 
+    private val _liveDeleteDialog = MutableStateFlow<ReceiveDeleteDialog?>(null)
+    val liveDeleteDialog: StateFlow<ReceiveDeleteDialog?>
+        get() = _liveDeleteDialog
+
+    private val _liveClearHistory = MutableStateFlow<ReceiveDeleteDialog?>(null)
+    val liveClearHistory: StateFlow<ReceiveDeleteDialog?>
+        get() = _liveClearHistory
+
+    init {
+        receiveClearHistory()
+        receiveDeleteDialog()
+    }
+
     fun getDialogs() {
         repository.emitAndReceive(
             Constance.DIALOGS,
@@ -28,6 +47,52 @@ class DialogViewModel @Inject constructor(
                 jsonUtils.getSafeObject<ReceiveDialog>(eventData.toString())
             receiveError.onSuccess {
                 _liveGetDialogs.value = it
+            }
+        }
+    }
+
+    fun sendDeleteDialog(peerId: Int, deleteBoth: Boolean) {
+        val requestDeleteDialog = RequestDeleteDialog(
+            peerId = peerId,
+            deleteBoth = deleteBoth
+        )
+        repository.send(
+            Constance.DELETE_DIALOG,
+            jsonUtils.toCustomJson(requestDeleteDialog)
+        )
+    }
+
+    fun sendClearHistory(peerId: Int, deleteBoth: Boolean) {
+        val requestDeleteDialog = RequestDeleteDialog(
+            peerId = peerId,
+            deleteBoth = deleteBoth
+        )
+        repository.send(
+            Constance.CLEAR_HISTORY,
+            jsonUtils.toCustomJson(requestDeleteDialog)
+        )
+    }
+
+    private fun receiveDeleteDialog() {
+        repository.onReceivedData(Constance.DELETE_DIALOG) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveDeleteDialog>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liveDeleteDialog.emit(it)
+                }
+            }
+        }
+    }
+
+    private fun receiveClearHistory() {
+        repository.onReceivedData(Constance.CLEAR_HISTORY) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveDeleteDialog>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liveClearHistory.emit(it)
+                }
             }
         }
     }

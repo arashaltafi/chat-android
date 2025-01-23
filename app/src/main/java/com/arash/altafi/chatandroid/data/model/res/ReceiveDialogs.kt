@@ -22,4 +22,6 @@ data class ReceiveDialogs(
     val unreadCount: Int? = null,
     @SerializedName("isTyping")
     val isTyping: String? = null,
+    @SerializedName("isOnline")
+    val isOnline: Boolean? = null,
 )
