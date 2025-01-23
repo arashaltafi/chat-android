@@ -4,6 +4,7 @@ object Constance {
     const val UNAUTHORIZED = "401"
     const val ERROR = "error"
 
+    const val DELETE_MESSAGE = "deleteMessage"
     const val SEND_MESSAGE = "sendMessage"
     const val GET_MESSAGES = "getMessages"
     const val RECEIVE_MESSAGE = "receiveMessage"
