@@ -6,11 +6,10 @@ import com.arash.altafi.chatandroid.data.model.req.RequestReactionMessage
 import com.arash.altafi.chatandroid.data.model.req.RequestSendMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveDeleteDialog
 import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessages
-import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessagesChatRoom
-import com.arash.altafi.chatandroid.data.model.res.ReceiveMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
 import com.arash.altafi.chatandroid.data.model.res.ReceiveReactionMessage
 import com.arash.altafi.chatandroid.data.model.res.ReceiveSendMessageChatRoom
+import com.arash.altafi.chatandroid.data.model.res.ReceiveTyping
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
@@ -32,6 +31,7 @@ class ChatViewModel @Inject constructor(
         receiveSeenMessage()
         receiveDeliverMessage()
         receiveReactionMessage()
+        receiveTyping()
     }
 
     private val _liveGetMessages = MutableStateFlow<ReceiveGetMessages?>(null)
@@ -57,6 +57,10 @@ class ChatViewModel @Inject constructor(
     private val _liveReactionMessage = MutableStateFlow<ReceiveReactionMessage?>(null)
     val liveReactionMessage: StateFlow<ReceiveReactionMessage?>
         get() = _liveReactionMessage
+
+    private val _liveTyping = MutableStateFlow<ReceiveTyping?>(null)
+    val liveTyping: StateFlow<ReceiveTyping?>
+        get() = _liveTyping
 
     fun getMessages(peerId: Int) {
         val requestGetMessages = RequestGetMessages(
@@ -88,6 +92,28 @@ class ChatViewModel @Inject constructor(
         )
     }
 
+    fun sendStartTyping(peerId: Int) {
+        val requestGetMessages = RequestGetMessages(
+            peerId = peerId,
+        )
+
+        repository.send(
+            Constance.START_TYPING,
+            jsonUtils.toCustomJson(requestGetMessages)
+        )
+    }
+
+    fun sendStopTyping(peerId: Int) {
+        val requestGetMessages = RequestGetMessages(
+            peerId = peerId,
+        )
+
+        repository.send(
+            Constance.STOP_TYPING,
+            jsonUtils.toCustomJson(requestGetMessages)
+        )
+    }
+
     fun sendReactionMessage(peerId: Int, messageId: Long, reaction: String) {
         val requestReactionMessage = RequestReactionMessage(
             peerId = peerId,
@@ -102,7 +128,9 @@ class ChatViewModel @Inject constructor(
     }
 
     // todo fix it
-    fun sendMessages(message: String? = null, url: String? = null, reaction: String? = null) {
+    fun sendMessages(peerId: Int, message: String? = null, url: String? = null) {
+        sendStopTyping(peerId)
+
         val requestSendMessageChatRoom = RequestSendMessageChatRoom(
             text = message,
             url = url,
@@ -166,6 +194,18 @@ class ChatViewModel @Inject constructor(
             receiveError.onSuccess {
                 viewModelScope.launch {
                     _liveReactionMessage.emit(it)
+                }
+            }
+        }
+    }
+
+    private fun receiveTyping() {
+        repository.onReceivedData(Constance.IS_TYPING) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveTyping>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liveTyping.emit(it)
                 }
             }
         }

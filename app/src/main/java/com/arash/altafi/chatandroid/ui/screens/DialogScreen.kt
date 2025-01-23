@@ -37,6 +37,7 @@ import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
+import com.arash.altafi.chatandroid.viewmodel.ChatViewModel
 import com.arash.altafi.chatandroid.viewmodel.DialogViewModel
 import saman.zamani.persiandate.PersianDate
 
@@ -46,9 +47,12 @@ fun DialogScreen(navController: NavController) {
 
     val authViewModel: AuthViewModel = hiltViewModel()
     val dialogViewModel: DialogViewModel = hiltViewModel()
+    val chatViewModel: ChatViewModel = hiltViewModel()
 
     val introduce by authViewModel.liveIntroduce.collectAsState()
     val liveGetDialogs by dialogViewModel.liveGetDialogs.collectAsState()
+
+    val liveTyping by chatViewModel.liveTyping.collectAsState()
 
     LaunchedEffect(Unit) {
         authViewModel.sendIntroduce()
@@ -100,7 +104,11 @@ fun DialogScreen(navController: NavController) {
                             .padding(16.dp, 8.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .shadow(4.dp)
-                            .border(1.dp, colorResource(R.color.gray_800), RoundedCornerShape(8.dp)),
+                            .border(
+                                1.dp,
+                                colorResource(R.color.gray_800),
+                                RoundedCornerShape(8.dp)
+                            ),
                         colors = CardDefaults.cardColors(
                             containerColor = colorResource(R.color.gray_300)
                         ),
@@ -120,7 +128,7 @@ fun DialogScreen(navController: NavController) {
                                     .weight(1f),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Box (
+                                Box(
                                     modifier = Modifier
                                         .size(50.dp)
                                 ) {
@@ -171,7 +179,9 @@ fun DialogScreen(navController: NavController) {
                             val lastSeen = it.dialogs[user].time ?: "نامشخص"
                             val textLastSeen =
                                 if (lastSeen == "نامشخص") lastSeen else {
-                                    PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                                    PersianDate(
+                                        lastSeen.toLong().fixSummerTime()
+                                    ).getDateClassified()
                                 }
                             val textTyping = it.dialogs[user].isTyping ?: ""
                             Column(
@@ -197,7 +207,12 @@ fun DialogScreen(navController: NavController) {
                                         color = Color.White
                                     )
                                 }
-                                if (textTyping == "") {
+                                if (
+                                    textTyping == "" &&
+                                    liveTyping == null ||
+                                    liveTyping?.peerId != it.dialogs[user].peerId ||
+                                    liveTyping?.message == ""
+                                ) {
                                     Text(
                                         text = textLastSeen,
                                         fontSize = 12.sp,

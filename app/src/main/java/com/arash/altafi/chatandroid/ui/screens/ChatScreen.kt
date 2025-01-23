@@ -51,6 +51,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -92,6 +93,9 @@ import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.ChatViewModel
 import com.arash.altafi.chatandroid.viewmodel.DialogViewModel
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import saman.zamani.persiandate.PersianDate
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -108,11 +112,17 @@ fun ChatScreen(navController: NavController? = null, id: String) {
         return
     }
 
+    val coroutineScope = rememberCoroutineScope()
+    var typingJob: Job? by remember { mutableStateOf(null) }
+    var isTyping by remember { mutableStateOf(false) }
+
     val listState = rememberLazyListState()
     val context = LocalContext.current
     val chatViewModel: ChatViewModel = hiltViewModel()
     val profileViewModel: ProfileViewModel = hiltViewModel()
     val dialogViewModel: DialogViewModel = hiltViewModel()
+
+    val liveTyping by chatViewModel.liveTyping.collectAsState()
 
     val liveClearHistory by dialogViewModel.liveClearHistory.collectAsState()
     val liveDeleteDialog by dialogViewModel.liveDeleteDialog.collectAsState()
@@ -337,6 +347,8 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                             modifier = Modifier.padding(top = 2.dp),
                             text = if (isBlockPeer) {
                                 "توسط کاربر مسدود شده اید"
+                            } else if (liveTyping?.peerId == id.toInt() && liveTyping?.message != "") {
+                                liveTyping?.message ?: ""
                             } else {
                                 if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
                                     PersianDate(
@@ -684,6 +696,21 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         value = message,
                         onValueChange = { newValue ->
                             message = newValue
+
+                            // Cancel any existing debounce job
+                            typingJob?.cancel()
+
+                            if (!isTyping) {
+                                chatViewModel.sendStartTyping(id.toInt())
+                                isTyping = true
+                            }
+
+                            // Start a new debounce job
+                            typingJob = coroutineScope.launch {
+                                delay(5000) // Wait for 5 seconds
+                                chatViewModel.sendStopTyping(id.toInt())
+                                isTyping = false
+                            }
                         },
                         placeholder = {
                             Text(
@@ -707,6 +734,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                         return@IconButton
                                     }
                                     chatViewModel.sendMessages(
+                                        peerId = id.toInt(),
                                         message = message
                                     )
                                     message = ""
@@ -768,6 +796,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                     return@KeyboardActions
                                 }
                                 chatViewModel.sendMessages(
+                                    peerId = id.toInt(),
                                     message = message
                                 )
                                 keyboardController?.hide()
