@@ -311,6 +311,14 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                 Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
                                 showMenu = false
                             },
+                            PopupMenuItem(label = "حذف تاریخچه") {
+                                Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
+                                showMenu = false
+                            },
+                            PopupMenuItem(label = "حذف گفتگو") {
+                                Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
+                                showMenu = false
+                            },
                         )
                     )
                 }
