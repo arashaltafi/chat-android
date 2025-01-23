@@ -22,6 +22,8 @@ data class ReceiveMessagesPeer(
     var deliverTime: Long? = null,
     @SerializedName("isComing")
     val isComing: Boolean? = null,
+    @SerializedName("reaction")
+    val reaction: String? = null,
 )
 
 data class PeerInfo(

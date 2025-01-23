@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -75,6 +76,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
@@ -117,6 +119,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
 
     val liveSeenMessage by chatViewModel.liveSeenMessage.collectAsState()
     val liveDeliverMessage by chatViewModel.liveDeliverMessage.collectAsState()
+    val liveReactionMessage by chatViewModel.liveReactionMessage.collectAsState()
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -190,6 +193,21 @@ fun ChatScreen(navController: NavController? = null, id: String) {
             // If you need to clear and re-add the updated messages
             val updatedMessages = messages.map {
                 it.copy(deliverTime = System.currentTimeMillis()) // Assuming ReceiveMessagesPeer is a data class
+            }
+            messages.clear() // Clear the current list
+            messages.addAll(updatedMessages) // Add the updated messages back
+        }
+    }
+
+    // handle Reaction Message
+    LaunchedEffect(liveReactionMessage) {
+        if (liveReactionMessage?.peerId == id.toInt()) {
+            val updatedMessages = messages.map {
+                if (it.id == liveReactionMessage?.messageId) {
+                    it.copy(reaction = liveReactionMessage?.reaction)
+                } else {
+                    it
+                }
             }
             messages.clear() // Clear the current list
             messages.addAll(updatedMessages) // Add the updated messages back
@@ -438,51 +456,59 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(0.9f)
                                 ) {
-                                    Text(
-                                        modifier = Modifier
-                                            .background(
-                                                brush = Brush.linearGradient(
-                                                    colors = listOf(
-                                                        colorResource(R.color.gray_200),
-                                                        colorResource(R.color.gray_300)
+                                    Box {
+                                        Text(
+                                            modifier = Modifier
+                                                .background(
+                                                    brush = Brush.linearGradient(
+                                                        colors = listOf(
+                                                            colorResource(R.color.gray_200),
+                                                            colorResource(R.color.gray_300)
+                                                        ),
+                                                        start = Offset(0f, 0f), // Top-left
+                                                        end = Offset(1000f, 1000f) // Bottom-right
                                                     ),
-                                                    start = Offset(0f, 0f), // Top-left
-                                                    end = Offset(1000f, 1000f) // Bottom-right
-                                                ),
-                                                shape = RoundedCornerShape(
-                                                    topEnd = 8.dp,
-                                                    topStart = 4.dp,
-                                                    bottomEnd = 8.dp,
-                                                    bottomStart = 0.dp,
+                                                    shape = RoundedCornerShape(
+                                                        topEnd = 8.dp,
+                                                        topStart = 4.dp,
+                                                        bottomEnd = 8.dp,
+                                                        bottomStart = 0.dp,
+                                                    )
                                                 )
+                                                .combinedClickable(
+                                                    onClick = {},
+                                                    onDoubleClick = {
+                                                        messages[item].id?.let {
+                                                            chatViewModel.sendReactionMessage(
+                                                                peerId = id.toInt(),
+                                                                messageId = it,
+                                                                reaction = "❤"
+                                                            )
+                                                        }
+                                                    }
+                                                )
+                                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                            textAlign = TextAlign.Justify,
+                                            text = messages[item].text ?: "",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.Black,
+                                            fontFamily = CustomFont
+                                        )
+                                        if (messages[item].reaction != "") {
+                                            Text(
+                                                modifier = Modifier
+                                                    .zIndex(2f)
+                                                    .align(Alignment.BottomEnd)
+                                                    .offset(8.dp, 8.dp),
+                                                textAlign = TextAlign.Justify,
+                                                text = messages[item].reaction ?: "",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = Color.Black,
+                                                fontFamily = CustomFont
                                             )
-                                            .combinedClickable(
-                                                onClick = {
-                                                    Toast
-                                                        .makeText(
-                                                            context,
-                                                            "onClick",
-                                                            Toast.LENGTH_SHORT
-                                                        )
-                                                        .show()
-                                                },
-                                                onDoubleClick = {
-                                                    Toast
-                                                        .makeText(
-                                                            context,
-                                                            "onDoubleClick",
-                                                            Toast.LENGTH_SHORT
-                                                        )
-                                                        .show()
-                                                }
-                                            )
-                                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                                        textAlign = TextAlign.Justify,
-                                        text = messages[item].text ?: "",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Black,
-                                        fontFamily = CustomFont
-                                    )
+                                        }
+                                    }
+
                                     Row(
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
@@ -527,52 +553,64 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                             .padding(end = 12.dp)
                                             .weight(1f)
                                     ) {
-                                        Text(
+                                        Box(
                                             modifier = Modifier
-                                                .background(
-                                                    brush = Brush.linearGradient(
-                                                        colors = listOf(
-                                                            colorResource(R.color.blue_600),
-                                                            colorResource(R.color.blue_400)
+                                                .align(Alignment.End)
+                                        ) {
+                                            Text(
+                                                modifier = Modifier
+                                                    .background(
+                                                        brush = Brush.linearGradient(
+                                                            colors = listOf(
+                                                                colorResource(R.color.blue_600),
+                                                                colorResource(R.color.blue_400)
+                                                            ),
+                                                            start = Offset(0f, 0f), // Top-left
+                                                            end = Offset(
+                                                                1000f,
+                                                                1000f
+                                                            ) // Bottom-right
                                                         ),
-                                                        start = Offset(0f, 0f), // Top-left
-                                                        end = Offset(1000f, 1000f) // Bottom-right
-                                                    ),
-                                                    shape = RoundedCornerShape(
-                                                        topEnd = 0.dp,
-                                                        topStart = 8.dp,
-                                                        bottomEnd = 4.dp,
-                                                        bottomStart = 8.dp,
+                                                        shape = RoundedCornerShape(
+                                                            topEnd = 0.dp,
+                                                            topStart = 8.dp,
+                                                            bottomEnd = 4.dp,
+                                                            bottomStart = 8.dp,
+                                                        )
                                                     )
+                                                    .combinedClickable(
+                                                        onClick = {},
+                                                        onDoubleClick = {
+                                                            messages[item].id?.let {
+                                                                chatViewModel.sendReactionMessage(
+                                                                    peerId = id.toInt(),
+                                                                    messageId = it,
+                                                                    reaction = "❤"
+                                                                )
+                                                            }
+                                                        }
+                                                    )
+                                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                                textAlign = TextAlign.Justify,
+                                                text = messages[item].text ?: "",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = Color.White,
+                                                fontFamily = CustomFont
+                                            )
+                                            if (messages[item].reaction != "") {
+                                                Text(
+                                                    modifier = Modifier
+                                                        .zIndex(2f)
+                                                        .align(Alignment.BottomStart)
+                                                        .offset(-(8).dp, 8.dp),
+                                                    textAlign = TextAlign.Justify,
+                                                    text = messages[item].reaction ?: "",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color.Black,
+                                                    fontFamily = CustomFont
                                                 )
-                                                .combinedClickable(
-                                                    onClick = {
-                                                        Toast
-                                                            .makeText(
-                                                                context,
-                                                                "onClick",
-                                                                Toast.LENGTH_SHORT
-                                                            )
-                                                            .show()
-                                                    },
-                                                    onDoubleClick = {
-                                                        Toast
-                                                            .makeText(
-                                                                context,
-                                                                "onDoubleClick",
-                                                                Toast.LENGTH_SHORT
-                                                            )
-                                                            .show()
-                                                    }
-                                                )
-                                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                                .align(Alignment.End),
-                                            textAlign = TextAlign.Justify,
-                                            text = messages[item].text ?: "",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color.White,
-                                            fontFamily = CustomFont
-                                        )
+                                            }
+                                        }
                                         Text(
                                             modifier = Modifier
                                                 .padding(top = 6.dp)

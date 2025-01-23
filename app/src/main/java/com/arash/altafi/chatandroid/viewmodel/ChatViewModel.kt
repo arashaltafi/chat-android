@@ -2,12 +2,14 @@ package com.arash.altafi.chatandroid.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.arash.altafi.chatandroid.data.model.req.RequestGetMessages
+import com.arash.altafi.chatandroid.data.model.req.RequestReactionMessage
 import com.arash.altafi.chatandroid.data.model.req.RequestSendMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveDeleteDialog
 import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessages
 import com.arash.altafi.chatandroid.data.model.res.ReceiveGetMessagesChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessageChatRoom
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
+import com.arash.altafi.chatandroid.data.model.res.ReceiveReactionMessage
 import com.arash.altafi.chatandroid.data.model.res.ReceiveSendMessageChatRoom
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
@@ -29,6 +31,7 @@ class ChatViewModel @Inject constructor(
         receiveMessage()
         receiveSeenMessage()
         receiveDeliverMessage()
+        receiveReactionMessage()
     }
 
     private val _liveGetMessages = MutableStateFlow<ReceiveGetMessages?>(null)
@@ -51,7 +54,11 @@ class ChatViewModel @Inject constructor(
     val liveDeliverMessage: StateFlow<ReceiveDeleteDialog?>
         get() = _liveDeliverMessage
 
-    fun getMessages(peerId: Int? = null) {
+    private val _liveReactionMessage = MutableStateFlow<ReceiveReactionMessage?>(null)
+    val liveReactionMessage: StateFlow<ReceiveReactionMessage?>
+        get() = _liveReactionMessage
+
+    fun getMessages(peerId: Int) {
         val requestGetMessages = RequestGetMessages(
             peerId = peerId,
         )
@@ -70,7 +77,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun sendSeenMessage(peerId: Int? = null) {
+    fun sendSeenMessage(peerId: Int) {
         val requestGetMessages = RequestGetMessages(
             peerId = peerId,
         )
@@ -78,6 +85,19 @@ class ChatViewModel @Inject constructor(
         repository.send(
             Constance.SEEN_MESSAGE,
             jsonUtils.toCustomJson(requestGetMessages)
+        )
+    }
+
+    fun sendReactionMessage(peerId: Int, messageId: Long, reaction: String) {
+        val requestReactionMessage = RequestReactionMessage(
+            peerId = peerId,
+            messageId = messageId,
+            reaction = reaction,
+        )
+
+        repository.send(
+            Constance.REACTION_MESSAGE,
+            jsonUtils.toCustomJson(requestReactionMessage)
         )
     }
 
@@ -134,6 +154,18 @@ class ChatViewModel @Inject constructor(
             receiveError.onSuccess {
                 viewModelScope.launch {
                     _liveSeenMessage.emit(it)
+                }
+            }
+        }
+    }
+
+    private fun receiveReactionMessage() {
+        repository.onReceivedData(Constance.REACTION_MESSAGE) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveReactionMessage>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liveReactionMessage.emit(it)
                 }
             }
         }
