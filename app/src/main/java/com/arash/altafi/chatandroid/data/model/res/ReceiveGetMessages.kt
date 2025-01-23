@@ -17,9 +17,9 @@ data class ReceiveMessagesPeer(
     @SerializedName("sendTime")
     val sendTime: Long? = null,
     @SerializedName("seenTime")
-    val seenTime: Long? = null,
+    var seenTime: Long? = null,
     @SerializedName("deliverTime")
-    val deliverTime: Long? = null,
+    var deliverTime: Long? = null,
     @SerializedName("isComing")
     val isComing: Boolean? = null,
 )

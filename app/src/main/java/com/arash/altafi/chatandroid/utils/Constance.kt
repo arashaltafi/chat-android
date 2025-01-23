@@ -8,6 +8,7 @@ object Constance {
     const val GET_MESSAGES = "getMessages"
     const val RECEIVE_MESSAGE = "receiveMessage"
     const val SEEN_MESSAGE = "seenMessage"
+    const val DELIVER_MESSAGE = "deliverMessage"
     const val REACTION_MESSAGE = "reactionMessage"
 
     const val INTRODUCE = "introduce"

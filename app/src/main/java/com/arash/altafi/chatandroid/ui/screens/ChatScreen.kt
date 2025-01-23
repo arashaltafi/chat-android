@@ -29,6 +29,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Attachment
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -112,6 +115,9 @@ fun ChatScreen(navController: NavController? = null, id: String) {
     val liveClearHistory by dialogViewModel.liveClearHistory.collectAsState()
     val liveDeleteDialog by dialogViewModel.liveDeleteDialog.collectAsState()
 
+    val liveSeenMessage by chatViewModel.liveSeenMessage.collectAsState()
+    val liveDeliverMessage by chatViewModel.liveDeliverMessage.collectAsState()
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val liveProfile by profileViewModel.liveProfile.observeAsState()
@@ -160,10 +166,41 @@ fun ChatScreen(navController: NavController? = null, id: String) {
         }
     }
 
+    // handle Seen Message
+    LaunchedEffect(liveSeenMessage) {
+        if (liveSeenMessage?.peerId == id.toInt()) {
+            // Update each message's seenTime
+//            messages.forEach { it.seenTime = System.currentTimeMillis() }
+
+            // If you need to clear and re-add the updated messages
+            val updatedMessages = messages.map {
+                it.copy(seenTime = System.currentTimeMillis()) // Assuming ReceiveMessagesPeer is a data class
+            }
+            messages.clear() // Clear the current list
+            messages.addAll(updatedMessages) // Add the updated messages back
+        }
+    }
+
+    // handle Deliver Message
+    LaunchedEffect(liveDeliverMessage) {
+        if (liveDeliverMessage?.peerId == id.toInt()) {
+            // Update each message's seenTime
+//            messages.forEach { it.deliverTime = System.currentTimeMillis() }
+
+            // If you need to clear and re-add the updated messages
+            val updatedMessages = messages.map {
+                it.copy(deliverTime = System.currentTimeMillis()) // Assuming ReceiveMessagesPeer is a data class
+            }
+            messages.clear() // Clear the current list
+            messages.addAll(updatedMessages) // Add the updated messages back
+        }
+    }
+
     var showMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(id) {
         chatViewModel.getMessages(id.toInt())
+        chatViewModel.sendSeenMessage(id.toInt())
     }
 
     // Initialize messages list from liveGetChatRoom
@@ -446,16 +483,40 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                         color = Color.Black,
                                         fontFamily = CustomFont
                                     )
-                                    Text(
-                                        modifier = Modifier.padding(top = 6.dp),
-                                        text = PersianDate(
-                                            messages[item].sendTime?.toLong()
-                                                ?.fixSummerTime()
-                                        ).getDateClassified(),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White,
-                                        fontFamily = CustomFont
-                                    )
+                                    Row(
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        val seenState = if (messages[item].seenTime != 0L) {
+                                            Pair(Icons.Default.DoneAll, R.color.blue_500)
+                                        } else if (messages[item].deliverTime != 0L) {
+                                            Pair(Icons.Default.DoneAll, R.color.white)
+                                        } else {
+                                            Pair(Icons.Default.Done, R.color.white)
+                                        }
+                                        Icon(
+                                            modifier = Modifier.size(16.dp),
+                                            imageVector = seenState.first,
+                                            contentDescription = context.getString(R.string.app_name),
+                                            tint = colorResource(seenState.second)
+                                        )
+
+                                        Spacer(
+                                            modifier = Modifier.width(16.dp)
+                                        )
+
+                                        Text(
+                                            modifier = Modifier.padding(top = 6.dp),
+                                            text = PersianDate(
+                                                messages[item].sendTime?.toLong()
+                                                    ?.fixSummerTime()
+                                            ).getDateClassified(),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.White,
+                                            fontFamily = CustomFont
+                                        )
+                                    }
+
                                 }
                             } else {
                                 Row(
