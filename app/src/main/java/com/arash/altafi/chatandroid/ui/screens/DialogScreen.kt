@@ -2,6 +2,7 @@ package com.arash.altafi.chatandroid.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,9 +21,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
@@ -85,41 +89,103 @@ fun DialogScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(
+                            modifier = Modifier
+                                .weight(1f),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            AsyncImage(
-                                model = it.dialogs[user].avatar,
-                                contentDescription = it.dialogs[user].name,
+                            Box (
                                 modifier = Modifier
                                     .size(50.dp)
-                                    .clip(CircleShape)
-                                    .shadow(8.dp)
-                                    .border(
-                                        1.dp,
-                                        if (it.dialogs[user].time == "آنلاین") Color.Green else Color.Red,
-                                        CircleShape
-                                    ),
-                                contentScale = ContentScale.Crop,
-                            )
+                            ) {
+                                AsyncImage(
+                                    model = it.dialogs[user].avatar,
+                                    contentDescription = it.dialogs[user].name,
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .clip(CircleShape)
+                                        .shadow(8.dp),
+                                    contentScale = ContentScale.Crop,
+                                )
+                                if (it.dialogs[user].time == "آنلاین") {
+                                    Box(
+                                        modifier = Modifier
+                                            .zIndex(2f)
+                                            .align(Alignment.BottomStart)
+                                            .offset(8.dp, 2.dp)
+                                            .background(Color.Green, CircleShape)
+                                            .size(8.dp)
+                                    )
+                                }
+                            }
                             Spacer(Modifier.width(22.dp))
-                            Text(
-                                text = it.dialogs[user].name ?: context.getString(R.string.app_name),
-                                fontSize = 16.sp,
-                                fontStyle = FontStyle.Normal,
-                                fontFamily = CustomFont,
-                                color = Color.Black
-                            )
+                            Column {
+                                Text(
+                                    text = it.dialogs[user].name
+                                        ?: context.getString(R.string.app_name),
+                                    fontSize = 14.sp,
+                                    fontStyle = FontStyle.Normal,
+                                    fontFamily = CustomFont,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = Color.Black
+                                )
+                                Text(
+                                    text = it.dialogs[user].lastMessage ?: "",
+                                    fontSize = 12.sp,
+                                    fontStyle = FontStyle.Normal,
+                                    fontFamily = CustomFont,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = Color.Black
+                                )
+                            }
                         }
+                        Spacer(Modifier.width(16.dp))
                         val lastSeen = it.dialogs[user].time ?: "نامشخص"
-                        Text(
-                            text = if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
+                        val textLastSeen =
+                            if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
                                 PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
-                            },
-                            fontSize = 12.sp,
-                            fontStyle = FontStyle.Normal,
-                            fontFamily = CustomFont,
-                            color = Color.Black
-                        )
+                            }
+                        val textTyping = it.dialogs[user].isTyping ?: ""
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if ((it.dialogs[user].unreadCount ?: 0) > 0) {
+                                val unreadCount = if (it.dialogs[user].unreadCount!! > 99) {
+                                    "99+"
+                                } else it.dialogs[user].unreadCount?.toString()
+                                Text(
+                                    modifier = Modifier
+                                        .size(22.dp)
+                                        .background(
+                                            color = colorResource(R.color.green_700),
+                                            shape = CircleShape
+                                        ),
+                                    textAlign = TextAlign.Center,
+                                    text = unreadCount ?: "",
+                                    fontSize = 12.sp,
+                                    fontStyle = FontStyle.Normal,
+                                    fontFamily = CustomFont,
+                                    color = Color.White
+                                )
+                            }
+                            if (textTyping == "") {
+                                Text(
+                                    text = textLastSeen,
+                                    fontSize = 12.sp,
+                                    fontStyle = FontStyle.Normal,
+                                    fontFamily = CustomFont,
+                                    color = Color.Black
+                                )
+                            } else {
+                                LottieComponent(
+                                    size = DpSize(width = 24.dp, height = 24.dp),
+                                    loop = true,
+                                    lottieFile = R.raw.typing
+                                )
+                            }
+                        }
                     }
                 }
             }

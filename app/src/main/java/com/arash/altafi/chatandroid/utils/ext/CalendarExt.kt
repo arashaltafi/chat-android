@@ -83,7 +83,7 @@ fun PersianDate.getDateClassified(): String {
         }
         //more than 1 year > (yy.MM.DD) 01.12.31
         todayCalendar.get(Calendar.YEAR) != targetCalendar.get(Calendar.YEAR) -> {
-            "%02d.%02d.%02d".applyValue(shYear % 100, shMonth, shDay)
+            "%02d/%02d/%02d".applyValue(shYear % 100, shMonth, shDay)
         }
         //same week > (week-day name) جمعه
         todayCalendar.get(Calendar.WEEK_OF_YEAR) == targetCalendar.get(Calendar.WEEK_OF_YEAR) -> {
