@@ -19,6 +19,11 @@ class SocketRepository @Inject constructor(
     var initialConnectionErrorOccurred = false
 
     fun connect() {
+        // Check if the socket is already connected
+        if (socket?.connected() == true) {
+            return // Socket is already connected, no need to reconnect
+        }
+
         val options = IO.Options.builder()
             .setTransports(TRANSPORTS)
             .setUpgrade(true)

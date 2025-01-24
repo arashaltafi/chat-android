@@ -154,7 +154,7 @@ fun AppNavigation() {
             dataStoreViewModel.setToken("")
             dataStoreViewModel.clearUserInfo()
             navController.navigate(Route.Login) {
-                popUpTo(Route.Dialog) { inclusive = true }
+                popUpTo("dialog") { inclusive = true }
             }
         }
         mainViewModel.resetUnAuthorizedState()

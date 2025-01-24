@@ -91,7 +91,7 @@ fun VerifyScreen(navController: NavController, mobile: String) {
                 )
             )
             navController.navigate(Route.Dialog) {
-                popUpTo(Route.Verify) { inclusive = true }
+                popUpTo("verify") { inclusive = true }
             }
         }
     }

@@ -41,7 +41,7 @@ fun SettingScreen(navController: NavController) {
             authViewModel.resetLogoutState()
             delay(100)
             navController.navigate(Route.Login) {
-                popUpTo(Route.Setting) { inclusive = true }
+                popUpTo("setting") { inclusive = true }
             }
         }
     }

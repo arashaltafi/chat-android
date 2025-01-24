@@ -1,6 +1,7 @@
 package com.arash.altafi.chatandroid.ui.screens
 
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.text.*
@@ -35,10 +36,14 @@ import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.AuthViewModel
+import com.arash.altafi.chatandroid.viewmodel.MainViewModel
+import kotlin.getValue
 
 @Composable
 fun LoginScreen(navController: NavController) {
     val authViewModel: AuthViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
+
     val liveLogin by authViewModel.liveLogin.collectAsState()
 
     var isConnected by remember { mutableStateOf(true) }
@@ -56,6 +61,7 @@ fun LoginScreen(navController: NavController) {
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
+        mainViewModel.connect()
         focusRequester.requestFocus()
         keyboardController?.show()
     }
