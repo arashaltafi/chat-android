@@ -64,9 +64,9 @@ fun ImageScreen(navController: NavController, title: String, imageUrl: String) {
         return
     }
 
-    var scale by remember { mutableStateOf(1f) }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
