@@ -1,6 +1,9 @@
 package com.arash.altafi.chatandroid.ui.screens
 
+import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,20 +38,35 @@ import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BlockListScreen(navController: NavController) {
-    val profileViewModel: ProfileViewModel = hiltViewModel()
+    val context = LocalContext.current
 
+    var showBottomSheetUnBlock by remember { mutableStateOf(false) }
+    var selectedPeerId by remember { mutableIntStateOf(0) }
+
+    val profileViewModel: ProfileViewModel = hiltViewModel()
     val liveBlockList by profileViewModel.liveBlockList.collectAsState()
+    val liveBlock by profileViewModel.liveBlock.collectAsState()
 
     LaunchedEffect(Unit) {
         profileViewModel.getBlockList()
+    }
+
+    LaunchedEffect(liveBlock) {
+        liveBlock?.let {
+            Toast.makeText(context, "کاربر مورد نظر با موفقیت رفع مسدود شد", Toast.LENGTH_SHORT)
+                .show()
+            profileViewModel.getBlockList()
+        }
     }
 
     liveBlockList?.blockList?.let {
@@ -64,15 +83,28 @@ fun BlockListScreen(navController: NavController) {
                             .padding(16.dp, 8.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .shadow(4.dp)
-                            .border(1.dp, colorResource(R.color.gray_800), RoundedCornerShape(8.dp)),
+                            .border(
+                                1.dp,
+                                colorResource(R.color.gray_800),
+                                RoundedCornerShape(8.dp)
+                            )
+                            .combinedClickable(
+                                onClick = {
+                                    it[user].peerId?.let {
+                                        navController.navigate(Route.Chat(it.toString()))
+                                    }
+                                },
+                                onLongClick = {
+                                    it[user].peerId?.let {
+                                        selectedPeerId = it
+                                        showBottomSheetUnBlock = true
+                                    }
+
+                                }
+                            ),
                         colors = CardDefaults.cardColors(
                             containerColor = colorResource(R.color.gray_300)
                         ),
-                        onClick = {
-                            it[user].peerId?.let {
-                                navController.navigate(Route.Chat(it.toString()))
-                            }
-                        }
                     ) {
                         Row(
                             modifier = Modifier
@@ -110,7 +142,9 @@ fun BlockListScreen(navController: NavController) {
                             val lastSeen = it[user].lastSeen ?: "نامشخص"
                             Text(
                                 text = if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
-                                    PersianDate(lastSeen.toLong().fixSummerTime()).getDateClassified()
+                                    PersianDate(
+                                        lastSeen.toLong().fixSummerTime()
+                                    ).getDateClassified()
                                 },
                                 fontSize = 12.sp,
                                 fontStyle = FontStyle.Normal,
@@ -121,6 +155,17 @@ fun BlockListScreen(navController: NavController) {
                     }
                 }
             }
+
+            ShowBottomSheet(
+                isShow = showBottomSheetUnBlock,
+                title = R.string.set_unblock,
+                onConfirm = {
+                    profileViewModel.sendUnBlock(peerId = selectedPeerId)
+                },
+                onDismiss = {
+                    showBottomSheetUnBlock = false
+                }
+            )
         } else {
             Box(
                 modifier = Modifier

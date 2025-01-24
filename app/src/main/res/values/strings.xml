@@ -31,6 +31,7 @@
     <string name="no">خیر</string>
     <string name="title_delete_dialog">حذف گفتگو</string>
     <string name="title_clear_history">حذف تاریخچه</string>
+    <string name="set_unblock">رفع مسدودی</string>
     <string name="delete_both">برای طرف مقابل هم حذف شود؟</string>
     <string name="save_in_gallery_success">تصویر مورد نظر با موفقیت در گالری ذخیره شد.</string>
     <string name="save_in_gallery_error">هنگام ذخیره سازی تصویر خطایی رخ داده است.</string>
