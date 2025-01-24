@@ -57,7 +57,7 @@ fun SettingScreen(navController: NavController) {
             title = R.string.blocks,
             icon = R.drawable.ic_blocks
         ) {
-
+            navController.navigate(Route.BlockList)
         }
 
         SettingItem(

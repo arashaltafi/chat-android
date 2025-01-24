@@ -85,6 +85,7 @@ import kotlinx.coroutines.launch
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.BackPressHandler
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
+import com.arash.altafi.chatandroid.ui.screens.BlockListScreen
 import com.arash.altafi.chatandroid.ui.screens.ChatRoomScreen
 import com.arash.altafi.chatandroid.ui.screens.ChatScreen
 import com.arash.altafi.chatandroid.ui.screens.DialogScreen
@@ -194,21 +195,19 @@ fun AppNavigation() {
     val isDialogScreen = currentDestination == context.packageName + Route.Dialog.route
     val allowBottomBar = arrayOf(
         packageName + Route.Dialog.route,
-//        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
     val allowTopBar = arrayOf(
         packageName + Route.Users.route,
+        packageName + Route.BlockList.route,
         packageName + Route.Dialog.route,
-//        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
     val allowNavigationBar = arrayOf(
         packageName + Route.Users.route,
         packageName + Route.Dialog.route,
-//        packageName + Route.ChatRoom.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
     )
@@ -571,6 +570,9 @@ fun AppNavigation() {
                     }
                     composable<Route.Users> {
                         UsersScreen(navController)
+                    }
+                    composable<Route.BlockList> {
+                        BlockListScreen(navController)
                     }
                     composable<Route.ChatRoom> {
                         ChatRoomScreen(navController)

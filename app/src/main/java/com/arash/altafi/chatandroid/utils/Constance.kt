@@ -34,6 +34,7 @@ object Constance {
     const val UNBLOCK_PEER = "unBlockPeer"
     const val BLOCK = "block"
     const val UNBLOCK = "unBlock"
+    const val BLOCK_LIST = "blockList"
 
     const val DELETE_DIALOG = "deleteDialog"
     const val DIALOGS = "getDialogs"

@@ -7,6 +7,7 @@ import com.arash.altafi.chatandroid.data.model.UserInfoModel
 import com.arash.altafi.chatandroid.data.model.req.RequestBlock
 import com.arash.altafi.chatandroid.data.model.req.RequestGetMessages
 import com.arash.altafi.chatandroid.data.model.req.RequestSendEditProfile
+import com.arash.altafi.chatandroid.data.model.res.ReceiveBlockList
 import com.arash.altafi.chatandroid.data.model.res.ReceiveEditProfile
 import com.arash.altafi.chatandroid.data.model.res.ReceiveUserInfo
 import com.arash.altafi.chatandroid.data.repository.DataStoreRepository
@@ -33,6 +34,10 @@ class ProfileViewModel @Inject constructor(
     private val _liveProfile = MutableLiveData<UserInfoModel>()
     val liveProfile: LiveData<UserInfoModel>
         get() = _liveProfile
+
+    private val _liveBlockList = MutableStateFlow<ReceiveBlockList?>(null)
+    val liveBlockList: StateFlow<ReceiveBlockList?>
+        get() = _liveBlockList
 
     private val _liveBlock = MutableStateFlow<Boolean?>(null)
     val liveBlock: StateFlow<Boolean?>
@@ -121,6 +126,20 @@ class ProfileViewModel @Inject constructor(
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(100L)
                     getUserInfo()
+                }
+            }
+        }
+    }
+
+    fun getBlockList() {
+        repository.emitAndReceive(
+            Constance.BLOCK_LIST,
+        ) { eventData ->
+            val receiveUsers =
+                jsonUtils.getSafeObject<ReceiveBlockList>(eventData.toString())
+            receiveUsers.onSuccess {
+                viewModelScope.launch {
+                    _liveBlockList.emit(it)
                 }
             }
         }
