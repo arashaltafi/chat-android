@@ -35,11 +35,13 @@ import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
+import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.borderBottom
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
+import com.arash.altafi.chatandroid.viewmodel.DialogViewModel
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
 
@@ -60,15 +62,22 @@ fun ProfileUserScreen(navController: NavController, id: String) {
     val context = LocalContext.current
 
     val profileViewModel: ProfileViewModel = hiltViewModel()
+    val dialogViewModel: DialogViewModel = hiltViewModel()
+
     val liveUserInfo by profileViewModel.liveUserInfo.collectAsState()
 
     val liveBlockPeer by profileViewModel.liveBlockPeer.collectAsState()
     val liveBlock by profileViewModel.liveBlock.collectAsState()
 
-    var showMenu by remember { mutableStateOf(false) }
-
     var isBlockPeer by remember { mutableStateOf(false) }
     var isBlock by remember { mutableStateOf(false) }
+
+    val liveClearHistory by dialogViewModel.liveClearHistory.collectAsState()
+    val liveDeleteDialog by dialogViewModel.liveDeleteDialog.collectAsState()
+
+    var showPopupMenu by remember { mutableStateOf(false) }
+    var showBottomSheetDeleteDialog by remember { mutableStateOf(false) }
+    var showBottomSheetClearHistory by remember { mutableStateOf(false) }
 
     LaunchedEffect(id) {
         profileViewModel.getUserPeerInfo(id.toInt())
@@ -87,6 +96,20 @@ fun ProfileUserScreen(navController: NavController, id: String) {
         }
         liveBlock?.let {
             isBlock = liveBlock == true
+        }
+    }
+
+    // handle Clear History
+    LaunchedEffect(liveClearHistory) {
+        if (liveClearHistory?.peerId == id.toInt()) {
+            Toast.makeText(context , "تاریخچه با موفقیت حذف شد" , Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // handle Delete Dialog
+    LaunchedEffect(liveDeleteDialog) {
+        if (liveDeleteDialog?.peerId == id.toInt()) {
+            Toast.makeText(context , "گفتگو با موفقیت حذف شد" , Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -177,7 +200,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                         .background(colorResource(R.color.gray_500), CircleShape)
                         .border(1.dp, Color.White, CircleShape),
                     onClick = {
-                        showMenu = true
+                        showPopupMenu = true
                     }
                 ) {
                     Icon(
@@ -187,8 +210,8 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                     )
 
                     PopupMenu(
-                        showMenu = showMenu,
-                        onHideMenu = { showMenu = false },
+                        showMenu = showPopupMenu,
+                        onHideMenu = { showPopupMenu = false },
                         menuItems = listOf(
                             PopupMenuItem(label = if (isBlock) "رفع مسدودی" else "مسدود کردن") {
                                 if (isBlock) {
@@ -196,11 +219,19 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                                 } else {
                                     profileViewModel.sendBlock(peerId = id.toInt())
                                 }
-                                showMenu = false
+                                showPopupMenu = false
                             },
                             PopupMenuItem(label = "بی صدا کردن") {
                                 Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
-                                showMenu = false
+                                showPopupMenu = false
+                            },
+                            PopupMenuItem(label = "حذف تاریخچه") {
+                                showBottomSheetClearHistory = true
+                                showPopupMenu = false
+                            },
+                            PopupMenuItem(label = "حذف گفتگو") {
+                                showBottomSheetDeleteDialog = true
+                                showPopupMenu = false
                             },
                         )
                     )
@@ -347,4 +378,30 @@ fun ProfileUserScreen(navController: NavController, id: String) {
             color = Color.White
         )
     }
+
+
+    // bottom sheet dialogs
+    ShowBottomSheet(
+        isShow = showBottomSheetDeleteDialog,
+        title = R.string.title_delete_dialog,
+        checkboxText = R.string.delete_both,
+        onConfirm = { isChecked ->
+            dialogViewModel.sendDeleteDialog(id.toInt(), isChecked == true)
+        },
+        onDismiss = {
+            showBottomSheetDeleteDialog = false
+        }
+    )
+
+    ShowBottomSheet(
+        isShow = showBottomSheetClearHistory,
+        title = R.string.title_clear_history,
+        checkboxText = R.string.delete_both,
+        onConfirm = { isChecked ->
+            dialogViewModel.sendClearHistory(id.toInt(), isChecked == true)
+        },
+        onDismiss = {
+            showBottomSheetClearHistory = false
+        }
+    )
 }
