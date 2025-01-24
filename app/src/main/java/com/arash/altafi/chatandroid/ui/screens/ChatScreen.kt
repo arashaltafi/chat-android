@@ -86,6 +86,7 @@ import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
+import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -144,6 +145,10 @@ fun ChatScreen(navController: NavController? = null, id: String) {
 
     var isBlockPeer by remember { mutableStateOf(false) }
     var isBlock by remember { mutableStateOf(false) }
+
+    var showBottomSheetDeleteDialog by remember { mutableStateOf(false) }
+    var showBottomSheetClearHistory by remember { mutableStateOf(false) }
+    var showPopupMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(liveGetMessages) {
         liveGetMessages?.let {
@@ -224,8 +229,6 @@ fun ChatScreen(navController: NavController? = null, id: String) {
         }
     }
 
-    var showMenu by remember { mutableStateOf(false) }
-
     LaunchedEffect(id) {
         chatViewModel.getMessages(id.toInt())
         chatViewModel.sendSeenMessage(id.toInt())
@@ -260,6 +263,37 @@ fun ChatScreen(navController: NavController? = null, id: String) {
         }
     }
 
+    // show empty screen
+    if (liveGetMessages == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    text = "در حال دریافت اطلاعات ...",
+                    fontFamily = CustomFont,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal,
+                )
+
+                LottieComponent(
+                    size = DpSize(width = 200.dp, height = 200.dp),
+                    loop = true,
+                    lottieFile = R.raw.empty_list
+                )
+            }
+        }
+        return
+    }
+
+    // show chat screen
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -376,7 +410,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         modifier = Modifier
                             .fillMaxHeight(),
                         onClick = {
-                            showMenu = true
+                            showPopupMenu = true
                         }
                     ) {
                         Icon(
@@ -388,8 +422,8 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                     }
 
                     PopupMenu(
-                        showMenu = showMenu,
-                        onHideMenu = { showMenu = false },
+                        showMenu = showPopupMenu,
+                        onHideMenu = { showPopupMenu = false },
                         menuItems = listOf(
                             PopupMenuItem(label = if (isBlock) "رفع مسدودی" else "مسدود کردن") {
                                 if (isBlock) {
@@ -397,19 +431,19 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                 } else {
                                     profileViewModel.sendBlock(peerId = id.toInt())
                                 }
-                                showMenu = false
+                                showPopupMenu = false
                             },
                             PopupMenuItem(label = "بی صدا کردن") {
                                 Toast.makeText(context, "Mute clicked", Toast.LENGTH_SHORT).show()
-                                showMenu = false
+                                showPopupMenu = false
                             },
                             PopupMenuItem(label = "حذف تاریخچه") {
-                                dialogViewModel.sendClearHistory(id.toInt(), false)
-                                showMenu = false
+                                showBottomSheetClearHistory = true
+                                showPopupMenu = false
                             },
                             PopupMenuItem(label = "حذف گفتگو") {
-                                dialogViewModel.sendDeleteDialog(id.toInt(), false)
-                                showMenu = false
+                                showBottomSheetDeleteDialog = true
+                                showPopupMenu = false
                             },
                         )
                     )
@@ -808,4 +842,29 @@ fun ChatScreen(navController: NavController? = null, id: String) {
             }
         }
     }
+
+    // bottom sheet dialogs
+    ShowBottomSheet(
+        isShow = showBottomSheetDeleteDialog,
+        title = R.string.title_delete_dialog,
+        checkboxText = R.string.delete_both,
+        onConfirm = { isChecked ->
+            dialogViewModel.sendDeleteDialog(id.toInt(), isChecked == true)
+        },
+        onDismiss = {
+            showBottomSheetDeleteDialog = false
+        }
+    )
+
+    ShowBottomSheet(
+        isShow = showBottomSheetClearHistory,
+        title = R.string.title_clear_history,
+        checkboxText = R.string.delete_both,
+        onConfirm = { isChecked ->
+            dialogViewModel.sendClearHistory(id.toInt(), isChecked == true)
+        },
+        onDismiss = {
+            showBottomSheetClearHistory = false
+        }
+    )
 }

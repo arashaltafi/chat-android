@@ -25,4 +25,9 @@
     <string name="send">ارسال</string>
     <string name="typing">در حال تایپ …</string>
     <string name="write_hint">بنویسید …</string>
+    <string name="yes">بله</string>
+    <string name="no">خیر</string>
+    <string name="title_delete_dialog">حذف گفتگو</string>
+    <string name="title_clear_history">حذف تاریخچه</string>
+    <string name="delete_both">برای طرف مقابل هم حذف شود؟</string>
 </resources>
