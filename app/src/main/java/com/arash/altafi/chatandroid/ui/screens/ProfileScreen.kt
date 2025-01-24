@@ -96,7 +96,7 @@ fun ProfileScreen(navController: NavController) {
                     .size(120.dp)
             ) {
                 AsyncImage(
-                    model = liveProfile?.avatar,
+                    model = if (isEditMode) R.drawable.ic_user else liveProfile?.avatar,
                     contentDescription = liveProfile?.name,
                     modifier = Modifier
                         .zIndex(1f)

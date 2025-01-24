@@ -131,8 +131,8 @@ fun AppNavigation() {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             dataStoreViewModel.clearAll()
             drawerState.close()
-            navController.navigate(Route.Login)
             authViewModel.resetLogoutState()
+            navController.navigate(Route.Login)
         }
     }
 
@@ -154,7 +154,7 @@ fun AppNavigation() {
             dataStoreViewModel.setToken("")
             dataStoreViewModel.clearUserInfo()
             navController.navigate(Route.Login) {
-                popUpTo("dialog") { inclusive = true }
+                popUpTo(Route.Dialog) { inclusive = true }
             }
         }
         mainViewModel.resetUnAuthorizedState()
