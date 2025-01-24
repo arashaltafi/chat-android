@@ -60,4 +60,9 @@ sealed interface Route {
     data class Verify(val mobile: String) : Route {
         override val route: String = ".ui.navigation.Route.Verify"
     }
+
+    @Serializable
+    data class ImageScreen(var title: String, val imageUrl: String) : Route {
+        override val route: String = ".ui.navigation.Route.ImageScreen"
+    }
 }

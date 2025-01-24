@@ -36,7 +36,6 @@ import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
 import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
-import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.borderBottom
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -44,6 +43,7 @@ import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.DialogViewModel
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
+import com.arash.altafi.chatandroid.ui.navigation.Route
 
 @Composable
 fun ProfileUserScreen(navController: NavController, id: String) {
@@ -102,14 +102,14 @@ fun ProfileUserScreen(navController: NavController, id: String) {
     // handle Clear History
     LaunchedEffect(liveClearHistory) {
         if (liveClearHistory?.peerId == id.toInt()) {
-            Toast.makeText(context , "تاریخچه با موفقیت حذف شد" , Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "تاریخچه با موفقیت حذف شد", Toast.LENGTH_SHORT).show()
         }
     }
 
     // handle Delete Dialog
     LaunchedEffect(liveDeleteDialog) {
         if (liveDeleteDialog?.peerId == id.toInt()) {
-            Toast.makeText(context , "گفتگو با موفقیت حذف شد" , Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "گفتگو با موفقیت حذف شد", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -294,6 +294,16 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                             1.dp,
                             Color.White,
                             CircleShape
+                        )
+                        .clickable(
+                            onClick = {
+                                liveUserInfo?.peerInfo?.let {
+                                    navController.navigate(Route.ImageScreen(
+                                        title = it.name + " " + it.family,
+                                        imageUrl = it.avatar ?: ""
+                                    ))
+                                }
+                            }
                         ),
                     contentScale = ContentScale.Crop,
                 )

@@ -88,6 +88,7 @@ import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.screens.ChatRoomScreen
 import com.arash.altafi.chatandroid.ui.screens.ChatScreen
 import com.arash.altafi.chatandroid.ui.screens.DialogScreen
+import com.arash.altafi.chatandroid.ui.screens.ImageScreen
 import com.arash.altafi.chatandroid.ui.screens.LoginScreen
 import com.arash.altafi.chatandroid.ui.screens.ProfileScreen
 import com.arash.altafi.chatandroid.ui.screens.ProfileUserScreen
@@ -573,6 +574,13 @@ fun AppNavigation() {
                     }
                     composable<Route.ChatRoom> {
                         ChatRoomScreen(navController)
+                    }
+                    composable<Route.ChatRoom> {
+                        ChatRoomScreen(navController)
+                    }
+                    composable<Route.ImageScreen> { backStackEntry: NavBackStackEntry ->
+                        val args = backStackEntry.toRoute<Route.ImageScreen>()
+                        ImageScreen(navController, args.title, args.imageUrl)
                     }
                 }
 
