@@ -176,11 +176,11 @@ fun DialogScreen(navController: NavController) {
                                 }
                             }
                             Spacer(Modifier.width(16.dp))
-                            val lastSeen = it.dialogs[user].time ?: "نامشخص"
-                            val textLastSeen =
-                                if (lastSeen == "نامشخص") lastSeen else {
+                            val lastMsgTime = it.dialogs[user].time ?: "نامشخص"
+                            val textLastMsgTime =
+                                if (lastMsgTime == "نامشخص") lastMsgTime else {
                                     PersianDate(
-                                        lastSeen.toLong().fixSummerTime()
+                                        lastMsgTime.toLong().fixSummerTime()
                                     ).getDateClassified()
                                 }
                             val textTyping = it.dialogs[user].isTyping ?: ""
@@ -214,7 +214,7 @@ fun DialogScreen(navController: NavController) {
                                     liveTyping?.message == ""
                                 ) {
                                     Text(
-                                        text = textLastSeen,
+                                        text = textLastMsgTime,
                                         fontSize = 12.sp,
                                         fontStyle = FontStyle.Normal,
                                         fontFamily = CustomFont,
