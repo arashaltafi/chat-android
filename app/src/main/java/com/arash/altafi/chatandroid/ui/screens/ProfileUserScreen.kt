@@ -14,17 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -32,10 +32,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
+import com.arash.altafi.chatandroid.utils.ext.borderBottom
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
@@ -88,6 +90,37 @@ fun ProfileUserScreen(navController: NavController, id: String) {
         }
     }
 
+    // show empty screen
+    if (liveUserInfo == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    text = "در حال دریافت اطلاعات ...",
+                    fontFamily = CustomFont,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal,
+                )
+
+                LottieComponent(
+                    size = DpSize(width = 200.dp, height = 200.dp),
+                    loop = true,
+                    lottieFile = R.raw.empty_list
+                )
+            }
+        }
+        return
+    }
+
+    // show profile screen
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -100,14 +133,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
-                .drawBehind { // border bottom simulate
-                    drawLine(
-                        color = Color.White,
-                        start = Offset(x = 0f, y = size.height - 1 / 2),
-                        end = Offset(x = size.width, y = size.height - 1 / 2),
-                        strokeWidth = 2f
-                    )
-                },
+                .borderBottom(color = Color.White, strokeWidth = 2.dp),
         ) {
             // Background Image
             AsyncImage(
