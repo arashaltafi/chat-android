@@ -35,8 +35,8 @@ class ProfileViewModel @Inject constructor(
     val liveProfile: LiveData<UserInfoModel>
         get() = _liveProfile
 
-    private val _liveBlockList = MutableStateFlow<ReceiveBlockList?>(null)
-    val liveBlockList: StateFlow<ReceiveBlockList?>
+    private val _liveBlockList = MutableLiveData<ReceiveBlockList?>(null)
+    val liveBlockList: LiveData<ReceiveBlockList?>
         get() = _liveBlockList
 
     private val _liveBlock = MutableStateFlow<Boolean?>(null)
@@ -139,7 +139,8 @@ class ProfileViewModel @Inject constructor(
                 jsonUtils.getSafeObject<ReceiveBlockList>(eventData.toString())
             receiveUsers.onSuccess {
                 viewModelScope.launch {
-                    _liveBlockList.emit(it)
+                    _liveBlockList.postValue(null)
+                    _liveBlockList.postValue(it)
                 }
             }
         }

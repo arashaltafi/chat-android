@@ -111,15 +111,15 @@ dependencies {
 
     // Material
     implementation("androidx.compose.material3:material3:1.3.0")
-    implementation("androidx.compose.material:material:1.7.3")
-    implementation("androidx.compose.ui:ui:1.7.3")
-    implementation("androidx.compose.material:material-icons-extended-android:1.7.3")
+    implementation("androidx.compose.material:material:1.7.6")
+    implementation("androidx.compose.ui:ui:1.7.6")
+    implementation("androidx.compose.material:material-icons-extended-android:1.7.6")
 
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.5.2")
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
 
     // Tink for encryption
     implementation("com.google.crypto.tink:tink-android:1.8.0")
