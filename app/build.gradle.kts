@@ -96,7 +96,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.8.2")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
     // Lifecycle & ViewModel
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
