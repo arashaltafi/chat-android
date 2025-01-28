@@ -28,11 +28,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.Ltr
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
@@ -223,7 +223,7 @@ fun RegisterScreen(navController: NavController) {
                     )
                 )
 
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Ltr {
                     OutlinedTextField(
                         modifier = Modifier
                             .padding(top = 20.dp)
