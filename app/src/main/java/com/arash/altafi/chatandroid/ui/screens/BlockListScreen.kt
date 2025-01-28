@@ -48,6 +48,7 @@ import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
+import kotlinx.coroutines.delay
 import saman.zamani.persiandate.PersianDate
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -59,7 +60,7 @@ fun BlockListScreen(navController: NavController) {
     var selectedPeerId by remember { mutableIntStateOf(0) }
 
     val profileViewModel: ProfileViewModel = hiltViewModel()
-    val liveBlockList by profileViewModel.liveBlockList.observeAsState()
+    val liveBlockList by profileViewModel.liveBlockList.collectAsState()
     val liveBlock by profileViewModel.liveBlock.collectAsState()
 
     var refreshing by remember { mutableStateOf(false) }
@@ -75,8 +76,11 @@ fun BlockListScreen(navController: NavController) {
         profileViewModel.getBlockList()
     }
 
-    LaunchedEffect(liveBlockList) {
-        refreshing = false
+    LaunchedEffect(liveBlockList?.timestamp) {
+        if (liveBlockList != null) {
+            delay(500L)
+            refreshing = false
+        }
     }
 
     LaunchedEffect(liveBlock) {
@@ -87,7 +91,7 @@ fun BlockListScreen(navController: NavController) {
         }
     }
 
-    liveBlockList?.blockList?.let {
+    liveBlockList?.data?.blockList?.let {
         if (it.isNotEmpty()) {
             Box(
                 modifier = Modifier
