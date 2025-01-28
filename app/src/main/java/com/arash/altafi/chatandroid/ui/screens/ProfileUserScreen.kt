@@ -21,10 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -32,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
-import com.arash.altafi.chatandroid.ui.components.LottieComponent
+import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
 import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
@@ -119,31 +117,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
 
     // show empty screen
     if (liveUserInfo == null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    text = "در حال دریافت اطلاعات ...",
-                    fontFamily = CustomFont,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Normal,
-                )
-
-                LottieComponent(
-                    size = DpSize(width = 200.dp, height = 200.dp),
-                    loop = true,
-                    lottieFile = R.raw.empty_list
-                )
-            }
-        }
+        LoadingComponent()
         return
     }
 

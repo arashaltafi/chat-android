@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.components.ShowAlertDialog
 import com.arash.altafi.chatandroid.ui.navigation.Route
@@ -93,31 +94,9 @@ fun DialogScreen(navController: NavController) {
     }
 
     if (liveGetDialogs == null || liveGetDialogs?.data?.dialogs?.isEmpty() == true) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    text = "دیالوگی یافت نشد",
-                    fontFamily = CustomFont,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Normal,
-                )
-
-                LottieComponent(
-                    size = DpSize(width = 200.dp, height = 200.dp),
-                    loop = true,
-                    lottieFile = R.raw.empty_list
-                )
-            }
-        }
+        LoadingComponent(
+            title = "دیالوگی یافت نشد"
+        )
     } else {
         liveGetDialogs?.data?.let {
             Box(

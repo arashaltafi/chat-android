@@ -48,6 +48,7 @@ import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ChatRoomViewModel
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessages
+import com.arash.altafi.chatandroid.ui.components.EmptyComponent
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -198,25 +199,9 @@ fun ChatRoomScreen(navController: NavController) {
                         .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        LottieComponent(
-                            size = DpSize(width = 200.dp, height = 200.dp),
-                            loop = true,
-                            lottieFile = R.raw.empty_list3
-                        )
-
-                        Text(
-                            modifier = Modifier.padding(top = 16.dp),
-                            text = "پیامی یافت نشد ...",
-                            fontFamily = CustomFont,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Normal,
-                        )
-                    }
+                    EmptyComponent(
+                        title = "پیامی یافت نشد!"
+                    )
                 }
             } else {
                 // Chat Messages

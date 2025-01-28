@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,16 +31,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.EmptyComponent
+import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -203,57 +200,9 @@ fun BlockListScreen(navController: NavController) {
                 }
             )
         } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        text = "موردی یافت نشد",
-                        fontFamily = CustomFont,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
-                    )
-
-                    LottieComponent(
-                        size = DpSize(width = 200.dp, height = 200.dp),
-                        loop = true,
-                        lottieFile = R.raw.empty_list
-                    )
-                }
-            }
+            EmptyComponent()
         }
     } ?: run {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    text = "در حال دریافت اطلاعات ...",
-                    fontFamily = CustomFont,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Normal,
-                )
-
-                LottieComponent(
-                    size = DpSize(width = 200.dp, height = 200.dp),
-                    loop = true,
-                    lottieFile = R.raw.empty_list
-                )
-            }
-        }
+        LoadingComponent()
     }
 }

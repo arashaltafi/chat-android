@@ -30,7 +30,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Attachment
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.EmojiEmotions
@@ -66,7 +65,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -74,7 +72,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -83,7 +80,8 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
-import com.arash.altafi.chatandroid.ui.components.LottieComponent
+import com.arash.altafi.chatandroid.ui.components.EmptyComponent
+import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
 import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
@@ -265,31 +263,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
 
     // show empty screen
     if (liveGetMessages == null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    text = "در حال دریافت اطلاعات ...",
-                    fontFamily = CustomFont,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Normal,
-                )
-
-                LottieComponent(
-                    size = DpSize(width = 200.dp, height = 200.dp),
-                    loop = true,
-                    lottieFile = R.raw.empty_list
-                )
-            }
-        }
+        LoadingComponent()
         return
     }
 
@@ -458,25 +432,9 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                         .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        LottieComponent(
-                            size = DpSize(width = 200.dp, height = 200.dp),
-                            loop = true,
-                            lottieFile = R.raw.empty_list3
-                        )
-
-                        Text(
-                            modifier = Modifier.padding(top = 16.dp),
-                            text = "پیامی یافت نشد ...",
-                            fontFamily = CustomFont,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Normal,
-                        )
-                    }
+                    EmptyComponent(
+                        title = "پیامی یافت نشد!"
+                    )
                 }
             } else {
                 // Chat Messages
