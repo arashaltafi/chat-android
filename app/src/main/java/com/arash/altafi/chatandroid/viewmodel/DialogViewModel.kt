@@ -1,11 +1,9 @@
 package com.arash.altafi.chatandroid.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.arash.altafi.chatandroid.data.model.req.RequestBlock
 import com.arash.altafi.chatandroid.data.model.req.RequestDeleteDialog
 import com.arash.altafi.chatandroid.data.model.res.ReceiveDeleteDialog
 import com.arash.altafi.chatandroid.data.model.res.ReceiveDialog
-import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
@@ -22,8 +20,13 @@ class DialogViewModel @Inject constructor(
     private var jsonUtils: JsonUtils,
 ) : BaseViewModel() {
 
-    private val _liveGetDialogs = MutableStateFlow<ReceiveDialog?>(null)
-    val liveGetDialogs: StateFlow<ReceiveDialog?>
+    data class DialogListWrapper(
+        val data: ReceiveDialog?,
+        val timestamp: Long = System.currentTimeMillis()
+    )
+
+    private val _liveGetDialogs = MutableStateFlow<DialogListWrapper?>(null)
+    val liveGetDialogs: StateFlow<DialogListWrapper?>
         get() = _liveGetDialogs
 
     private val _liveDeleteDialog = MutableStateFlow<ReceiveDeleteDialog?>(null)
@@ -46,7 +49,9 @@ class DialogViewModel @Inject constructor(
             val receiveError =
                 jsonUtils.getSafeObject<ReceiveDialog>(eventData.toString())
             receiveError.onSuccess {
-                _liveGetDialogs.value = it
+                viewModelScope.launch {
+                    _liveGetDialogs.value = DialogListWrapper(it)
+                }
             }
         }
     }

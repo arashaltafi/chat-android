@@ -44,6 +44,7 @@ import com.arash.altafi.chatandroid.viewmodel.DialogViewModel
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import saman.zamani.persiandate.PersianDate
 import com.arash.altafi.chatandroid.ui.navigation.Route
+import com.arash.altafi.chatandroid.viewmodel.ChatViewModel
 
 @Composable
 fun ProfileUserScreen(navController: NavController, id: String) {
@@ -63,6 +64,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
 
     val profileViewModel: ProfileViewModel = hiltViewModel()
     val dialogViewModel: DialogViewModel = hiltViewModel()
+    val chatViewModel: ChatViewModel = hiltViewModel()
 
     val liveUserInfo by profileViewModel.liveUserInfo.collectAsState()
 
@@ -74,6 +76,8 @@ fun ProfileUserScreen(navController: NavController, id: String) {
 
     val liveClearHistory by dialogViewModel.liveClearHistory.collectAsState()
     val liveDeleteDialog by dialogViewModel.liveDeleteDialog.collectAsState()
+
+    val liveTyping by chatViewModel.liveTyping.collectAsState()
 
     var showPopupMenu by remember { mutableStateOf(false) }
     var showBottomSheetDeleteDialog by remember { mutableStateOf(false) }
@@ -268,6 +272,8 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                         modifier = Modifier.padding(top = 16.dp),
                         text = if (isBlockPeer) {
                             "توسط کاربر مسدود شده اید"
+                        } else if (liveTyping?.peerId == id.toInt() && liveTyping?.message != "") {
+                            liveTyping?.message ?: ""
                         } else {
                             if (lastSeen == "آنلاین" || lastSeen == "نامشخص") lastSeen else {
                                 PersianDate(
