@@ -191,8 +191,14 @@ fun AppNavigation() {
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
+
     val isSplashScreen = currentDestination == context.packageName + Route.Splash.route
     val isDialogScreen = currentDestination == context.packageName + Route.Dialog.route
+    val isUserScreen = currentDestination == context.packageName + Route.Users.route
+    val isSettingScreen = currentDestination == context.packageName + Route.Setting.route
+    val isBlockListScreen = currentDestination == context.packageName + Route.BlockList.route
+    val isProfileScreen = currentDestination == context.packageName + Route.Profile.route
+
     val allowBottomBar = arrayOf(
         packageName + Route.Dialog.route,
         packageName + Route.Profile.route,
@@ -355,8 +361,16 @@ fun AppNavigation() {
                                             tint = Color.Red
                                         )
                                     }
+                                    val title = when {
+                                        isDialogScreen -> context.getString(R.string.app_name)
+                                        isUserScreen -> context.getString(R.string.users)
+                                        isSettingScreen -> context.getString(R.string.setting)
+                                        isBlockListScreen -> context.getString(R.string.blocks)
+                                        isProfileScreen -> context.getString(R.string.profile)
+                                        else -> context.getString(R.string.app_name)
+                                    }
                                     Text(
-                                        text = context.getString(R.string.app_name),
+                                        text = title,
                                         color = Color.White,
                                         fontFamily = CustomFont
                                     )
