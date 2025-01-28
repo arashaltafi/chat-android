@@ -131,7 +131,7 @@ fun ChatRoomScreen(navController: NavController) {
                     .clip(RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp))
                     .fillMaxWidth()
                     .height(70.dp)
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(colorResource(R.color.blue_300))
                     .padding(horizontal = 16.dp),
             ) {
                 Row(

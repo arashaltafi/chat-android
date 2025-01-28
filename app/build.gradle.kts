@@ -115,6 +115,9 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.7.6")
     implementation("androidx.compose.material:material-icons-extended-android:1.7.6")
 
+    // Theme
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.5.2")
 

@@ -66,6 +66,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
@@ -230,8 +231,8 @@ fun AppNavigation() {
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(LocalConfiguration.current.screenWidthDp.dp * 0.7f),
-                    drawerContainerColor = MaterialTheme.colorScheme.primary,
-                    drawerContentColor = MaterialTheme.colorScheme.primary,
+                    drawerContainerColor = colorResource(R.color.blue_200),
+                    drawerContentColor = colorResource(R.color.blue_200),
                     drawerShape = RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp),
                 ) {
                     Column(
@@ -449,7 +450,7 @@ fun AppNavigation() {
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
+                                containerColor = colorResource(R.color.blue_300),
                                 titleContentColor = Color.White,
                             )
                         )
@@ -465,7 +466,7 @@ fun AppNavigation() {
                             NavigationBar(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp)),
-                                containerColor = MaterialTheme.colorScheme.primary,
+                                containerColor = colorResource(R.color.blue_300),
                             ) {
                                 //getting the list of bottom navigation items for our data class
                                 bottomNavigationItems().forEachIndexed { index, navigationItem ->

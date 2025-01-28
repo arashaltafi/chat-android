@@ -119,7 +119,7 @@ fun ImageScreen(navController: NavController, title: String, imageUrl: String) {
                 .clip(RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp))
                 .fillMaxWidth()
                 .height(70.dp)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(colorResource(R.color.blue_300))
                 .padding(horizontal = 16.dp)
                 .zIndex(2f),
             horizontalArrangement = Arrangement.SpaceBetween,
