@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
+import com.arash.altafi.chatandroid.ui.components.ShowAlertDialog
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -46,10 +47,13 @@ import com.arash.altafi.chatandroid.viewmodel.DialogViewModel
 import kotlinx.coroutines.delay
 import saman.zamani.persiandate.PersianDate
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DialogScreen(navController: NavController) {
     val context = LocalContext.current
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var selectedPeerId by remember { mutableIntStateOf(0) }
 
     val authViewModel: AuthViewModel = hiltViewModel()
     val dialogViewModel: DialogViewModel = hiltViewModel()
@@ -137,13 +141,21 @@ fun DialogScreen(navController: NavController) {
                                     1.dp,
                                     colorResource(R.color.gray_800),
                                     RoundedCornerShape(8.dp)
+                                )
+                                .combinedClickable(
+                                    onClick = {
+                                        navController.navigate(Route.Chat(it.dialogs[user].peerId.toString()))
+                                    },
+                                    onLongClick = {
+                                        it.dialogs[user].peerId?.let {
+                                            selectedPeerId = it
+                                            showDeleteDialog = true
+                                        }
+                                    }
                                 ),
                             colors = CardDefaults.cardColors(
                                 containerColor = colorResource(R.color.gray_300)
                             ),
-                            onClick = {
-                                navController.navigate(Route.Chat(it.dialogs[user].peerId.toString()))
-                            }
                         ) {
                             Row(
                                 modifier = Modifier
@@ -269,6 +281,19 @@ fun DialogScreen(navController: NavController) {
                     scale = true,
                     backgroundColor = colorResource(R.color.gray_700),
                     contentColor = Color.White
+                )
+            }
+
+            if (showDeleteDialog) {
+                ShowAlertDialog(
+                    title = R.string.title_delete_dialog,
+                    checkboxText = R.string.delete_both,
+                    onCancel = {
+                        showDeleteDialog = false
+                    },
+                    onConfirm = { isChecked ->
+                        dialogViewModel.sendDeleteDialog(selectedPeerId, isChecked == true)
+                    }
                 )
             }
         }

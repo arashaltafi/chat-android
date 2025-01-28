@@ -126,7 +126,6 @@ fun BlockListScreen(navController: NavController) {
                                             selectedPeerId = it
                                             showBottomSheetUnBlock = true
                                         }
-
                                     }
                                 ),
                             colors = CardDefaults.cardColors(
