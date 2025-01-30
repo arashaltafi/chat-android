@@ -87,6 +87,7 @@ import kotlinx.coroutines.launch
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.BackPressHandler
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
+import com.arash.altafi.chatandroid.ui.screens.AboutScreen
 import com.arash.altafi.chatandroid.ui.screens.BlockListScreen
 import com.arash.altafi.chatandroid.ui.screens.ChatRoomScreen
 import com.arash.altafi.chatandroid.ui.screens.ChatScreen
@@ -199,6 +200,7 @@ fun AppNavigation() {
     val isUserScreen = currentDestination == context.packageName + Route.Users.route
     val isSettingScreen = currentDestination == context.packageName + Route.Setting.route
     val isBlockListScreen = currentDestination == context.packageName + Route.BlockList.route
+    val isAboutScreen = currentDestination == context.packageName + Route.About.route
     val isProfileScreen = currentDestination == context.packageName + Route.Profile.route
 
     val allowBottomBar = arrayOf(
@@ -209,6 +211,7 @@ fun AppNavigation() {
     val allowTopBar = arrayOf(
         packageName + Route.Users.route,
         packageName + Route.BlockList.route,
+        packageName + Route.About.route,
         packageName + Route.Dialog.route,
         packageName + Route.Profile.route,
         packageName + Route.Setting.route
@@ -389,6 +392,7 @@ fun AppNavigation() {
                                         isUserScreen -> context.getString(R.string.users)
                                         isSettingScreen -> context.getString(R.string.setting)
                                         isBlockListScreen -> context.getString(R.string.blocks)
+                                        isAboutScreen -> context.getString(R.string.about)
                                         isProfileScreen -> context.getString(R.string.profile)
                                         else -> context.getString(R.string.app_name)
                                     }
@@ -610,6 +614,9 @@ fun AppNavigation() {
                     }
                     composable<Route.BlockList> {
                         BlockListScreen(navController)
+                    }
+                    composable<Route.About> {
+                        AboutScreen(navController)
                     }
                     composable<Route.ChatRoom> {
                         ChatRoomScreen(navController)

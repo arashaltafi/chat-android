@@ -11,6 +11,7 @@
     <string name="logout">خروج</string>
     <string name="blocks">مسدود شده ها</string>
     <string name="last_seen">آخرین بازدید</string>
+    <string name="about">درباره ما</string>
     <string name="register">ثبت نام</string>
     <string name="verify">ثبت کد تایید</string>
     <string name="phone">شماره تلفن</string>

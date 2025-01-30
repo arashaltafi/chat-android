@@ -70,6 +70,14 @@ fun SettingScreen(navController: NavController) {
 
         SettingItem(
             context = context,
+            title = R.string.about,
+            icon = R.drawable.baseline_supervisor_account_24
+        ) {
+            navController.navigate(Route.About)
+        }
+
+        SettingItem(
+            context = context,
             title = R.string.logout,
             icon = R.drawable.ic_logout
         ) {

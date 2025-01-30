@@ -32,6 +32,11 @@ sealed interface Route {
     }
 
     @Serializable
+    data object About : Route {
+        override val route: String = ".ui.navigation.Route.About"
+    }
+
+    @Serializable
     data class Chat(val id: String? = null) : Route {
         override val route: String = ".ui.navigation.Route.Chat"
     }
