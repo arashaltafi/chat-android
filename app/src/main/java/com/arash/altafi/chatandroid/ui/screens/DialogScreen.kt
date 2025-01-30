@@ -60,6 +60,7 @@ fun DialogScreen(navController: NavController) {
 
     val introduce by authViewModel.liveIntroduce.collectAsState()
     val liveGetDialogs by dialogViewModel.liveGetDialogs.collectAsState()
+    val liveUpdateDialog by dialogViewModel.liveUpdateDialog.collectAsState()
 
     val liveTyping by chatViewModel.liveTyping.collectAsState()
 

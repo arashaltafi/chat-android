@@ -136,7 +136,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
 
     val liveGetMessages by chatViewModel.liveGetMessages.collectAsState()
     val liveReceiveMessage by chatViewModel.liveReceiveMessage.collectAsState()
-    val liveSendMessage by chatViewModel.liveSendMessage.collectAsState()
+    val liveReceiveDeleteMessage by chatViewModel.liveReceiveDeleteMessage.collectAsState()
 
     val liveBlockPeer by profileViewModel.liveBlockPeer.collectAsState()
     val liveBlock by profileViewModel.liveBlock.collectAsState()
@@ -249,15 +249,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
     // Listen for new messages from liverMessageChatRoom
     LaunchedEffect(liveReceiveMessage) {
         liveReceiveMessage?.let {
-            messages.add(0, it)
-        }
-    }
-
-    // Listen for send new message
-    LaunchedEffect(liveSendMessage) {
-        if (liveSendMessage?.message == "ok" && liveSendMessage?.data?.text != null) {
-            listState.animateScrollToItem(0)
-//            messages.add(0, liveSendMessage!!.data) //todo fix it
+//            messages.add(0, it.messages)
         }
     }
 
@@ -723,7 +715,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                         ).show()
                                         return@IconButton
                                     }
-                                    chatViewModel.sendMessages(
+                                    chatViewModel.sendMessage(
                                         peerId = id.toInt(),
                                         message = message
                                     )
@@ -785,7 +777,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                     ).show()
                                     return@KeyboardActions
                                 }
-                                chatViewModel.sendMessages(
+                                chatViewModel.sendMessage(
                                     peerId = id.toInt(),
                                     message = message
                                 )

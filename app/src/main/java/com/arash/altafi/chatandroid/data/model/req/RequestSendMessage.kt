@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName
 
 data class RequestSendMessage(
     @SerializedName("peerId")
-    val peerId: String?,
+    val peerId: Int?,
 
-    @SerializedName("roomId")
-    val roomId: String?,
+    @SerializedName("url")
+    val url: String?,
 
     @SerializedName("text")
     val text: String?,

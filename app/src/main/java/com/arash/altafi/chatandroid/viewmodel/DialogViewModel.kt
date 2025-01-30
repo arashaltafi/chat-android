@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.arash.altafi.chatandroid.data.model.req.RequestDeleteDialog
 import com.arash.altafi.chatandroid.data.model.res.ReceiveDeleteDialog
 import com.arash.altafi.chatandroid.data.model.res.ReceiveDialog
+import com.arash.altafi.chatandroid.data.model.res.ReceiveUpdateDialog
 import com.arash.altafi.chatandroid.data.repository.SocketRepository
 import com.arash.altafi.chatandroid.utils.Constance
 import com.arash.altafi.chatandroid.utils.JsonUtils
@@ -37,7 +38,12 @@ class DialogViewModel @Inject constructor(
     val liveClearHistory: StateFlow<ReceiveDeleteDialog?>
         get() = _liveClearHistory
 
+    private val _liveUpdateDialog = MutableStateFlow<ReceiveUpdateDialog?>(null)
+    val liveUpdateDialog: StateFlow<ReceiveUpdateDialog?>
+        get() = _liveUpdateDialog
+
     init {
+        receiveUpdateDialog()
         receiveClearHistory()
         receiveDeleteDialog()
     }
@@ -97,6 +103,18 @@ class DialogViewModel @Inject constructor(
             receiveError.onSuccess {
                 viewModelScope.launch {
                     _liveClearHistory.emit(it)
+                }
+            }
+        }
+    }
+
+    private fun receiveUpdateDialog() {
+        repository.onReceivedData(Constance.UPDATE_DIALOG) { eventData ->
+            val receiveError =
+                jsonUtils.getSafeObject<ReceiveUpdateDialog>(eventData.toString())
+            receiveError.onSuccess {
+                viewModelScope.launch {
+                    _liveUpdateDialog.emit(it)
                 }
             }
         }
