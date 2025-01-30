@@ -404,19 +404,21 @@ fun AppNavigation() {
                                 }
                             },
                             navigationIcon = {
-                                Row {
-                                    IconButton(
-                                        onClick = {
-                                            coroutineScope.launch {
-                                                drawerState.open()
+                                if (currentDestination in allowBottomBar) {
+                                    Row {
+                                        IconButton(
+                                            onClick = {
+                                                coroutineScope.launch {
+                                                    drawerState.open()
+                                                }
                                             }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Menu,
+                                                contentDescription = "Menu",
+                                                tint = Color.White
+                                            )
                                         }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Menu,
-                                            contentDescription = "Menu",
-                                            tint = Color.White
-                                        )
                                     }
                                 }
                             },
