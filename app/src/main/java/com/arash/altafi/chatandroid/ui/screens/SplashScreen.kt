@@ -1,5 +1,6 @@
 package com.arash.altafi.chatandroid.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,13 +17,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
+import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
+import com.idapgroup.snowfall.snowfall
 
 @Composable
 fun SplashScreen(navController: NavController) {
@@ -49,6 +52,12 @@ fun SplashScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(colorResource(R.color.blue_900))
+            .snowfall(
+                colors = listOf(Color.White),
+                density = 0.01,
+                alpha = 0.2f
+            )
             .padding(horizontal = 32.dp, vertical = 48.dp),
         contentAlignment = Alignment.Center
     ) {

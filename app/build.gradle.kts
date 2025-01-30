@@ -118,6 +118,9 @@ dependencies {
     // Theme
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
 
+    // Snow Animation
+    implementation("com.github.idapgroup:Snowfall:0.9.1")
+
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.5.2")
 
