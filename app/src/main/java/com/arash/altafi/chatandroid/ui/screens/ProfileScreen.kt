@@ -20,7 +20,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -38,10 +37,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ProfileViewModel
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 
 @Composable
 fun ProfileScreen(navController: NavController) {
@@ -95,9 +94,8 @@ fun ProfileScreen(navController: NavController) {
                 modifier = Modifier
                     .size(120.dp)
             ) {
-                AsyncImage(
-                    model = if (isEditMode) R.drawable.ic_user else liveProfile?.avatar,
-                    contentDescription = liveProfile?.name,
+                ImageUrl(
+                    url = if (isEditMode) R.drawable.ic_user else liveProfile?.avatar,
                     modifier = Modifier
                         .zIndex(1f)
                         .size(120.dp)
@@ -107,8 +105,7 @@ fun ProfileScreen(navController: NavController) {
                             1.dp,
                             Color.White,
                             CircleShape
-                        ),
-                    contentScale = ContentScale.Crop,
+                        )
                 )
                 IconButton(
                     onClick = {

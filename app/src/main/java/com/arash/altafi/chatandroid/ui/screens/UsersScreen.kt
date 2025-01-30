@@ -19,17 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.UsersViewModel
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
@@ -76,9 +75,8 @@ fun UsersScreen(navController: NavController) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            AsyncImage(
-                                model = it[user].avatar,
-                                contentDescription = it[user].name,
+                            ImageUrl(
+                                url = it[user].avatar,
                                 modifier = Modifier
                                     .size(50.dp)
                                     .clip(CircleShape)
@@ -87,8 +85,7 @@ fun UsersScreen(navController: NavController) {
                                         1.dp,
                                         if (it[user].lastSeen == "آنلاین") Color.Green else Color.Red,
                                         CircleShape
-                                    ),
-                                contentScale = ContentScale.Crop,
+                                    )
                             )
                             Spacer(Modifier.width(22.dp))
                             Text(

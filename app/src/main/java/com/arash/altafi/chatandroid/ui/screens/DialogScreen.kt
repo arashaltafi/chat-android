@@ -20,11 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
@@ -33,8 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.LottieComponent
 import com.arash.altafi.chatandroid.ui.components.ShowAlertDialog
@@ -152,14 +150,12 @@ fun DialogScreen(navController: NavController) {
                                         modifier = Modifier
                                             .size(50.dp)
                                     ) {
-                                        AsyncImage(
-                                            model = it.dialogs[user].avatar,
-                                            contentDescription = it.dialogs[user].name,
+                                        ImageUrl(
+                                            url = it.dialogs[user].avatar,
                                             modifier = Modifier
                                                 .size(50.dp)
                                                 .clip(CircleShape)
-                                                .shadow(8.dp),
-                                            contentScale = ContentScale.Crop,
+                                                .shadow(8.dp)
                                         )
                                         if (it.dialogs[user].isOnline == true) {
                                             Box(

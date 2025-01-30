@@ -79,13 +79,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.ChatAndroidTheme
 import com.arash.altafi.chatandroid.viewmodel.DataStoreViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.BackPressHandler
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.components.NetworkConnectivityListener
 import com.arash.altafi.chatandroid.ui.screens.AboutScreen
 import com.arash.altafi.chatandroid.ui.screens.BlockListScreen
@@ -252,9 +252,8 @@ fun AppNavigation() {
                                 .padding(16.dp, 0.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            AsyncImage(
-                                model = userInfo?.avatar,
-                                contentDescription = userInfo?.name,
+                            ImageUrl(
+                                url = userInfo?.avatar,
                                 modifier = Modifier
                                     .size(50.dp)
                                     .clip(CircleShape)
@@ -263,8 +262,7 @@ fun AppNavigation() {
                                         1.dp,
                                         Color.Green,
                                         CircleShape
-                                    ),
-                                contentScale = ContentScale.Crop,
+                                    )
                             )
                             Spacer(Modifier.width(22.dp))
                             Text(

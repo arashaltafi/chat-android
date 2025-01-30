@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -38,18 +37,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.viewmodel.ChatRoomViewModel
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessages
 import com.arash.altafi.chatandroid.ui.components.EmptyComponent
-import com.arash.altafi.chatandroid.ui.components.LottieComponent
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.navigation.Route
 import com.arash.altafi.chatandroid.utils.ext.fixSummerTime
 import com.arash.altafi.chatandroid.utils.ext.getDateClassified
@@ -333,9 +330,8 @@ fun ChatRoomScreen(navController: NavController) {
                                             }
                                         }
                                     ) {
-                                        AsyncImage(
-                                            model = messages[item].avatar,
-                                            contentDescription = messages[item].fullName,
+                                        ImageUrl(
+                                            url = messages[item].avatar,
                                             modifier = Modifier
                                                 .padding(top = 6.dp)
                                                 .size(38.dp)
@@ -344,8 +340,7 @@ fun ChatRoomScreen(navController: NavController) {
                                                     0.5.dp,
                                                     Color.Green,
                                                     CircleShape
-                                                ),
-                                            contentScale = ContentScale.Crop,
+                                                )
                                         )
                                     }
                                 }

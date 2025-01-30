@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,10 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.utils.PermissionUtils
 import com.arash.altafi.chatandroid.utils.ext.saveImage
@@ -230,9 +229,8 @@ fun ImageScreen(navController: NavController, title: String, imageUrl: String) {
                     }
                 }
         ) {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = context.getString(R.string.app_name),
+            ImageUrl(
+                url = imageUrl,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
             )

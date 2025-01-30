@@ -35,10 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.ui.theme.CustomFont
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.ui.components.EmptyComponent
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.ShowBottomSheet
 import com.arash.altafi.chatandroid.ui.navigation.Route
@@ -139,9 +139,8 @@ fun BlockListScreen(navController: NavController) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    AsyncImage(
-                                        model = it[user].avatar,
-                                        contentDescription = it[user].name,
+                                    ImageUrl(
+                                        url = it[user].avatar,
                                         modifier = Modifier
                                             .size(50.dp)
                                             .clip(CircleShape)
@@ -151,7 +150,6 @@ fun BlockListScreen(navController: NavController) {
                                                 if (it[user].lastSeen == "آنلاین") Color.Green else Color.Red,
                                                 CircleShape
                                             ),
-                                        contentScale = ContentScale.Crop,
                                     )
                                     Spacer(Modifier.width(22.dp))
                                     Text(

@@ -77,10 +77,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
 import com.arash.altafi.chatandroid.data.model.res.ReceiveMessagesPeer
 import com.arash.altafi.chatandroid.ui.components.EmptyComponent
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
@@ -324,9 +324,8 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                             navController?.navigate(Route.ProfileUserScreen(id))
                         }
                     ) {
-                        AsyncImage(
-                            model = liveGetMessages?.peerInfo?.avatar,
-                            contentDescription = liveGetMessages?.peerInfo?.name,
+                        ImageUrl(
+                            url = liveGetMessages?.peerInfo?.avatar,
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(CircleShape)
@@ -334,8 +333,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                                     1.dp,
                                     if (liveGetMessages?.peerInfo?.lastSeen == "آنلاین") Color.Green else Color.Red,
                                     CircleShape
-                                ),
-                            contentScale = ContentScale.Crop,
+                                )
                         )
                     }
                     Spacer(Modifier.width(12.dp))

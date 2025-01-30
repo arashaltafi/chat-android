@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.arash.altafi.chatandroid.R
+import com.arash.altafi.chatandroid.ui.components.ImageUrl
 import com.arash.altafi.chatandroid.ui.components.LoadingComponent
 import com.arash.altafi.chatandroid.ui.components.PopupMenu
 import com.arash.altafi.chatandroid.ui.components.PopupMenuItem
@@ -137,14 +137,13 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                 .borderBottom(color = Color.White, strokeWidth = 2.dp),
         ) {
             // Background Image
-            AsyncImage(
-                model = liveUserInfo?.peerInfo?.avatar,
-                contentDescription = liveUserInfo?.peerInfo?.name,
+            ImageUrl(
+                url = liveUserInfo?.peerInfo?.avatar,
+                contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .fillMaxSize()
-                    .blur(16.dp),
-                alpha = 0.5f,
-                contentScale = ContentScale.FillBounds
+                    .blur(16.dp)
+                    .alpha(0.5f)
             )
 
             Row(
@@ -263,9 +262,8 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                         color = Color.White
                     )
                 }
-                AsyncImage(
-                    model = liveUserInfo?.peerInfo?.avatar,
-                    contentDescription = liveUserInfo?.peerInfo?.name,
+                ImageUrl(
+                    url = liveUserInfo?.peerInfo?.avatar,
                     modifier = Modifier
                         .size(120.dp)
                         .clip(CircleShape)
@@ -284,8 +282,7 @@ fun ProfileUserScreen(navController: NavController, id: String) {
                                     ))
                                 }
                             }
-                        ),
-                    contentScale = ContentScale.Crop,
+                        )
                 )
             }
         }
