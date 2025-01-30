@@ -4,6 +4,7 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -296,7 +297,7 @@ fun AppNavigation() {
                                     selected = isSelected,
                                     icon = {
                                         Icon(
-                                            painter = painterResource(id = item.icon),
+                                            painter = painterResource(item.icon),
                                             contentDescription = context.getString(item.label),
                                             tint = contentColor
                                         )
@@ -320,24 +321,45 @@ fun AppNavigation() {
 
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp, 0.dp),
+                                .padding(16.dp, 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            Button(
-                                onClick = {
-                                    authViewModel.sendLogout()
+                            NavigationDrawerItem(
+                                modifier = Modifier
+                                    .background(
+                                        color = colorResource(R.color.red_300),
+                                        shape = RoundedCornerShape(
+                                            16.dp
+                                        )
+                                    )
+                                    .padding(NavigationDrawerItemDefaults.ItemPadding),
+                                label = {
+                                    Text(
+                                        text = context.getString(R.string.logout),
+                                        color = Color.White,
+                                        fontFamily = CustomFont
+                                    )
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                            ) {
-                                Text(
-                                    text = context.getString(R.string.logout),
-                                    color = Color.White,
-                                    fontFamily = CustomFont,
-                                    fontSize = 16.sp
-                                )
-                            }
+                                selected = false,
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_logout_24),
+                                        contentDescription = context.getString(R.string.logout),
+                                        tint = Color.White
+                                    )
+                                },
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    selectedContainerColor = Color.Transparent,
+                                    unselectedContainerColor = Color.Transparent
+                                ),
+                                onClick = {
+                                    coroutineScope.launch {
+                                        drawerState.close()
+                                    }
+                                    authViewModel.sendLogout()
+                                }
+                            )
                         }
                     }
                 }
