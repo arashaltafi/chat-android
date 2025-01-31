@@ -4,24 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class ReceiveSendMessage(
     @SerializedName("message")
-    val messages: ReceiveSendMessagesPeer,
+    val messages: ReceiveMessagesPeer,
     @SerializedName("peerId")
     val peerId: Int? = null,
-)
-
-data class ReceiveSendMessagesPeer(
-    @SerializedName("id")
-    val id: Long? = null,
-    @SerializedName("text")
-    val text: String? = null,
-    @SerializedName("sendTime")
-    val sendTime: Long? = null,
-    @SerializedName("seenTime")
-    var seenTime: Long? = null,
-    @SerializedName("deliverTime")
-    var deliverTime: Long? = null,
-    @SerializedName("isComing")
-    val isComing: Boolean? = null,
-    @SerializedName("reaction")
-    val reaction: String? = null,
+    @SerializedName("sendedSuccess")
+    val sendedSuccess: Boolean? = null,
 )

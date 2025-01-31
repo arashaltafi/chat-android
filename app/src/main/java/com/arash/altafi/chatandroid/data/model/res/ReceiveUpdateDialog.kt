@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class ReceiveUpdateDialog(
     @SerializedName("dialog")
-    val dialog: ReceiveDialogs? = null,
+    val dialog: List<ReceiveDialogs>? = null,
 )

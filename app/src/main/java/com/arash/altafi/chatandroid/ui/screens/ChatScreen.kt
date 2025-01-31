@@ -227,12 +227,23 @@ fun ChatScreen(navController: NavController? = null, id: String) {
         }
     }
 
+    // handle Delete Message
+    LaunchedEffect(liveReceiveDeleteMessage) {
+        if (liveReceiveDeleteMessage?.peerId == id.toInt()) {
+            val updatedMessages = messages.filter {
+                it.id != liveReceiveDeleteMessage?.messageId
+            }
+            messages.clear() // Clear the current list
+            messages.addAll(updatedMessages) // Add the updated messages back
+        }
+    }
+
     LaunchedEffect(id) {
         chatViewModel.getMessages(id.toInt())
         chatViewModel.sendSeenMessage(id.toInt())
     }
 
-    // Initialize messages list from liveGetChatRoom
+    // Initialize messages list from liveGetMessages
     LaunchedEffect(arrayOf(liveGetMessages, liveProfile)) {
         if (
             liveGetMessages?.messages != null &&
@@ -246,10 +257,17 @@ fun ChatScreen(navController: NavController? = null, id: String) {
         }
     }
 
-    // Listen for new messages from liverMessageChatRoom
+    // Listen for new messages from liveReceiveMessage
     LaunchedEffect(liveReceiveMessage) {
         liveReceiveMessage?.let {
-//            messages.add(0, it.messages)
+            if (it.peerId == id.toInt()) {
+                messages.add(0, it.messages)
+                if (it.sendedSuccess == true) {
+                    listState.animateScrollToItem(0)
+                } else {
+                    chatViewModel.sendSeenMessage(id.toInt())
+                }
+            }
         }
     }
 
@@ -439,7 +457,7 @@ fun ChatScreen(navController: NavController? = null, id: String) {
                     state = listState
                 ) {
                     items(messages.size) { item ->
-                        val isSendByMe = messages[item].isComing == true
+                        val isSendByMe = messages[item].isComing == false
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
